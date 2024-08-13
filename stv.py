@@ -359,7 +359,7 @@ st.image(buf, use_column_width=True)
 # half_selection = data.loc[data['title'] == selection]['period'].values[0]
 # time_selection = data.loc[data['title'] == selection]['formatted_time'].values[0]
 
-video_path = f"/Users/malekshafei/Desktop/Louisville/LouCity Video/{match_selection}-h{half_selection}.mp4"
+video_path = f"LouCity Video/{match_selection}-h{half_selection}.mp4"
 #video_path = f"/Users/malekshafei/Desktop/Louisville/LouCity Video/3930487-h{half_selection}.mp4"
 minutes, seconds = map(int, time_selection.split(':'))
 start_time_seconds = minutes * 60 + seconds
