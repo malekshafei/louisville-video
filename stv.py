@@ -128,18 +128,14 @@ matches = [
     '7/19 vs Colorado',
     '7/27 vs Monterey',
     '8/3 @ New Mexico',
-    '8/10 vs Sacramento'
+    '8/10 vs Sacramento',
+    '8/17 vs Charleston'
            ]
 
 
 mode_selection = 'Verticality'
 col_to_check = 'ovr_verticality'
-data = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/vert-data.parquet")
-
-
-
-# video_file_1 = '/Users/malekshafei/Desktop/Louisville/comp-3930475-h1.mp4'
-# video_file_2 = '/Users/malekshafei/Desktop/Louisville/comp-3930475-h2.mp4'
+data = pd.read_parquet("vert-data.parquet")
 
 
 
@@ -181,7 +177,7 @@ with col4:
     )
 
 if mode_selection == 'Verticality':
-    data = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/vert-data.parquet")
+    data = pd.read_parquet("vert-data.parquet")
     col_to_check = 'ovr_verticality'
 
 if match_selection != 'All Matches':
@@ -212,7 +208,7 @@ if sort_setting == 'Best Actions':
 #         )
 match_selection = data.loc[data['title'] == selection]['match_id'].values[0]
 half_selection = data.loc[data['title'] == selection]['period'].values[0]
-time_selection = data.loc[data['title'] == selection]['formatted_time'].values[0]
+time_selection = data.loc[data['title'] == selection]['timestamp'].values[0]
 
 
 
@@ -226,163 +222,265 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mplsoccer import Pitch
 
-sequence_id = data[data['title'] == selection]['sequence_id'].values[0]
-events = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/USL-verticality.parquet")
+# sequence_id = data[data['title'] == selection]['sequence_id'].values[0]
+# events = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/USL-verticality.parquet")
 
-# Prepare the plot
-pitch = Pitch(pitch_type='statsbomb', pitch_color='#400179', line_color='#c7d5cc', half=False, pad_top=4, corner_arcs=True)
-fig, ax = pitch.draw(figsize=(12, 8))
-fig.set_facecolor('#400179')
+# # Prepare the plot
+# pitch = Pitch(pitch_type='statsbomb', pitch_color='#400179', line_color='#c7d5cc', half=False, pad_top=4, corner_arcs=True)
+# fig, ax = pitch.draw(figsize=(12, 8))
+# fig.set_facecolor('#400179')
 
-colors = ['white']  # Different colors for each sequence
-legend_info = []
-
-
-# Plot each sequence
-sequence_group = events[events['sequence_id'] == sequence_id]
-vert_row = data[data['sequence_id'] == sequence_id].iloc[0]
-print(sequence_id)
-#print(len(sequence_group))
-sequence_group = sequence_group.sort_values(by=['timestamp', 'minute','second'])
-first_event = sequence_group.iloc[0]
-last_event = sequence_group.iloc[-1]
-
-opponent = sequence_group['opp_team'].values[0]
-date = sequence_group['clean_date'].values[0]
-time = sequence_group['formatted_time'].values[0]
-end_time = sequence_group['formatted_time'].values[-1]
+# colors = ['white']  # Different colors for each sequence
+# legend_info = []
 
 
+# # Plot each sequence
+# sequence_group = events[events['sequence_id'] == sequence_id]
+# vert_row = data[data['sequence_id'] == sequence_id].iloc[0]
+# print(sequence_id)
+# #print(len(sequence_group))
+# sequence_group = sequence_group.sort_values(by=['timestamp', 'minute','second'])
+# first_event = sequence_group.iloc[0]
+# last_event = sequence_group.iloc[-1]
 
-time_info = f"{first_event['minute']}:{first_event['second']} - {last_event['minute']}:{last_event['second']}"
-legend_label = f"{opponent} - {time_info}"
-#legend_info.append((colors[idx % len(colors)], legend_label))
+# opponent = sequence_group['opp_team'].values[0]
+# date = sequence_group['clean_date'].values[0]
+# time = sequence_group['formatted_time'].values[0]
+# end_time = sequence_group['formatted_time'].values[-1]
 
 
 
+# time_info = f"{first_event['minute']}:{first_event['second']} - {last_event['minute']}:{last_event['second']}"
+# legend_label = f"{opponent} - {time_info}"
+# #legend_info.append((colors[idx % len(colors)], legend_label))
 
-a = 1
-for i, event in sequence_group.iterrows():
 
-    if event['type'] in ['Pass', 'Carry', 'Shot']:
-        event_time = event['formatted_time']
-        player = change_racing_names(event['player'])
-        action = event['type']
+
+
+# a = 1
+# for i, event in sequence_group.iterrows():
+
+#     if event['type'] in ['Pass', 'Carry', 'Shot']:
+#         event_time = event['formatted_time']
+#         player = change_racing_names(event['player'])
+#         action = event['type']
         
 
-        x_start = event['x']
-        y_start = event['y']
+#         x_start = event['x']
+#         y_start = event['y']
 
-        if event['type'] == 'Pass':
-            linestyle='solid'
-            x_end = event['pass_end_x']
-            y_end = event['pass_end_y']
-            legend_info.append(f"{a}. {player} - {action}")
+#         if event['type'] == 'Pass':
+#             linestyle='solid'
+#             x_end = event['pass_end_x']
+#             y_end = event['pass_end_y']
+#             legend_info.append(f"{a}. {player} - {action}")
 
-        elif event['type'] == 'Carry':
-            linestyle='dashed'
-            x_end = event['carry_end_x']
-            y_end = event['carry_end_y']
-            #print(x_end,y_end)
-        else:
-            #print("...")
-            legend_info.append(f"{a}. {player} - {action}")
-            #continue  # Skip this event if end location data is missing or not in the correct format
+#         elif event['type'] == 'Carry':
+#             linestyle='dashed'
+#             x_end = event['carry_end_x']
+#             y_end = event['carry_end_y']
+#             #print(x_end,y_end)
+#         else:
+#             #print("...")
+#             legend_info.append(f"{a}. {player} - {action}")
+#             #continue  # Skip this event if end location data is missing or not in the correct format
 
-        # Draw lines and scatter for each event in the sequence
-        pitch.lines(x_start, y_start, x_end, y_end, ax=ax, color='white', linewidth=3.5, linestyle=linestyle)
-        pitch.scatter(x_start, y_start, ax=ax, color='white', s = 250)
-        pitch.scatter(x_end, y_end, ax=ax, color='white', s = 250)
+#         # Draw lines and scatter for each event in the sequence
+#         pitch.lines(x_start, y_start, x_end, y_end, ax=ax, color='white', linewidth=3.5, linestyle=linestyle)
+#         pitch.scatter(x_start, y_start, ax=ax, color='white', s = 250)
+#         pitch.scatter(x_end, y_end, ax=ax, color='white', s = 250)
 
-        ax.text(x_start, y_start, str(a), fontsize=9, color='black', ha='center', va='center')
-        a += 1
+#         ax.text(x_start, y_start, str(a), fontsize=9, color='black', ha='center', va='center')
+#         a += 1
 
-if last_event['type'] == 'Ball Receipt*':
-    x,y = last_event['x'], last_event['y']
-    player = change_racing_names(last_event['player'])
-    ax.text(x, y, str(a), fontsize=9, color='black', ha='center', va='center')
-    legend_info.append(f"{a}. {player} - Reception")
+# if last_event['type'] == 'Ball Receipt*':
+#     x,y = last_event['x'], last_event['y']
+#     player = change_racing_names(last_event['player'])
+#     ax.text(x, y, str(a), fontsize=9, color='black', ha='center', va='center')
+#     legend_info.append(f"{a}. {player} - Reception")
     
     
 
-def ordinal(x):
-    if x >= 99: return "Top 1%"
-    elif x >= 50: return f"Top {100-int(x)}%"
-    elif x <= 1: return "Bottom 1%"
-    else: return f"Bottom {int(x)}%"
+# def ordinal(x):
+#     if x >= 99: return "Top 1%"
+#     elif x >= 50: return f"Top {100-int(x)}%"
+#     elif x <= 1: return "Bottom 1%"
+#     else: return f"Bottom {int(x)}%"
 
-for label in legend_info:
-    ax.plot([], [], color='black', label=label)
-ax.legend(loc='lower left',facecolor='#400179', edgecolor='None', title='Actions', fontsize = 12)
-# Add titles and legend
-ax.set_title(f"{date} Box Entry vs {opponent} - {time} - {end_time}", fontsize=20)
-
-
+# for label in legend_info:
+#     ax.plot([], [], color='black', label=label)
+# ax.legend(loc='lower left',facecolor='#400179', edgecolor='None', title='Actions', fontsize = 12)
+# # Add titles and legend
+# ax.set_title(f"{date} Box Entry vs {opponent} - {time} - {end_time}", fontsize=20)
 
 
-seq_pct_net_forward = int(vert_row['seq_pct_net_forward'] * 100)
-pct_seq_pct_net_forward = int(vert_row['pct_seq_pct_net_forward'])
-verticality_score = round(vert_row['ovr_verticality'],1)
 
 
-seq_speed = round(vert_row['seq_speed'],1)
-pct_seq_speed = round(vert_row['pct_seq_speed'],1)
-#print(pct_seq_speed)
-subtitle_1 = f"Verticality Score: {verticality_score}"
-subtitle_0 = f"{seq_pct_net_forward}% of Passes Forward ({ordinal(pct_seq_pct_net_forward)})"
-subtitle_2 = f"{seq_speed} m/s  ({ordinal(pct_seq_speed)})"
+# seq_pct_net_forward = int(vert_row['seq_pct_net_forward'] * 100)
+# pct_seq_pct_net_forward = int(vert_row['pct_seq_pct_net_forward'])
+# verticality_score = round(vert_row['ovr_verticality'],1)
+
+
+# seq_speed = round(vert_row['seq_speed'],1)
+# pct_seq_speed = round(vert_row['pct_seq_speed'],1)
+# #print(pct_seq_speed)
+# subtitle_1 = f"Verticality Score: {verticality_score}"
+# subtitle_0 = f"{seq_pct_net_forward}% of Passes Forward ({ordinal(pct_seq_pct_net_forward)})"
+# subtitle_2 = f"{seq_speed} m/s  ({ordinal(pct_seq_speed)})"
     
-ax.text(0.5, 0.98, subtitle_1, ha='center', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
-ax.text(0.05, 0.98, subtitle_0, ha='left', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
-ax.text(0.85, 0.98, subtitle_2, ha='right', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
+# ax.text(0.5, 0.98, subtitle_1, ha='center', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
+# ax.text(0.05, 0.98, subtitle_0, ha='left', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
+# ax.text(0.85, 0.98, subtitle_2, ha='right', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
 
 
 
-buf = io.BytesIO()
-plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+# buf = io.BytesIO()
+# plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
 
-plt.savefig("/Users/malekshafei/Downloads/812test.png")
-#fig.savefig("PIctestjuly3", format='png', bbox_inches='tight', pad_inches=0)
+# plt.savefig("/Users/malekshafei/Downloads/812test.png")
+# #fig.savefig("PIctestjuly3", format='png', bbox_inches='tight', pad_inches=0)
 
-buf.seek(0)
+# buf.seek(0)
 
 
-# plt.savefig("PIctestjuly3.png")
+# # plt.savefig("PIctestjuly3.png")
 
-#st.pyplot(plt)
+# #st.pyplot(plt)
 
     
-st.image(buf, use_column_width=True)
+# st.image(buf, use_column_width=True)
 
 
 # match_selection = data.loc[data['title'] == selection]['match_id'].values[0]
 # half_selection = data.loc[data['title'] == selection]['period'].values[0]
 # time_selection = data.loc[data['title'] == selection]['formatted_time'].values[0]
 
-video_path = f"LouCity Video/{match_selection}-h{half_selection}.mp4"
+#minutes, seconds = map(int, time_selection.split(':'))
+
+def find_closest_segment_with_times(time_str, segment_length = 60, overlap = 30):
+    # Convert time_str to seconds
+    minutes, seconds = map(int, time_str.split(':'))
+    time_in_seconds = minutes * 60 + seconds
+
+    # Calculate segment details
+    step = segment_length - overlap
+    segment_number = time_in_seconds // step + 1
+    
+    # Calculate the start time of the segment
+    start_time = (segment_number - 1) * step
+    end_time = start_time + segment_length
+    
+    # Calculate time within segment
+    time_within_segment = time_in_seconds - start_time
+    
+    return segment_number, time_within_segment
+
+# # Example usage
+# segment_length = 60  # 1 minute segments
+# overlap = 30  # 30 seconds overlap
+
+time_str = time_selection[3:8]
+print(time_str)
+segment, time_within_segment = find_closest_segment_with_times(time_str)
+
+
+
+
+#video_path = f"lou-video-test/{match_selection}-h{half_selection}-{segment}.mp4"
+
+#video_path = f"lou-video-test/{match_selection}-h{half_selection}.mp4"
+
 #video_path = f"/Users/malekshafei/Desktop/Louisville/LouCity Video/3930487-h{half_selection}.mp4"
-minutes, seconds = map(int, time_selection.split(':'))
-start_time_seconds = minutes * 60 + seconds
-
-print('vid')
-st.video(video_path, start_time = start_time_seconds - 2)
-
-#st.video(video_path)#, start_time = start_time_seconds - 2)
-
-
-#st.title(f"Racing Recruitment")
-
-#st.dataframe(df)
-
-# selected_index = event_list[event_list == selection].index[0]
+# minutes, seconds = map(int, time_selection.split(':'))
+# start_time_seconds = minutes * 60 + seconds
 
 
 
-# if half_selection == 1:
-#     st.video(video_file_1, start_time=int(times[selected_index]) - 2)
-#     print('red1')
+# video_path = f"/Users/malekshafei/Desktop/Louisville/lou-video-test/{match_selection}-h{half_selection}-{segment}.mp4"
 
-# if half_selection == 2:
-#     st.video(video_file_2, start_time=int(times[selected_index]) - 2)
-#     print('red2')
+# st.video(video_path, start_time = time_within_segment)
+# print(video_path)
+# print('vid')
+
+# import google.oauth2
+# import google.auth
+
+# from google.oauth2 import service_account
+# from googleapiclient.discovery import build
+
+
+# FOLDER_ID = '1_cmrY9EqRS8AuS5Wy1djNysyiZU8k-WP'
+
+# SERVICE_ACCOUNT_FILE = '/Users/malekshafei/Downloads/louisville-video-drive-6fc10104701e.json'
+# SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+
+# credentials = service_account.Credentials.from_service_account_file(
+#     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
+
+# service = build('drive', 'v3', credentials=credentials)
+
+# # def list_files_in_folder(folder_id):
+# #     query = f"'{folder_id}' in parents"
+# #     results = service.files().list(q=query, fields="files(id, name)").execute()
+# #     return results.get('files', [])
+# def list_files_in_folder(folder_id):
+#     files = []
+#     page_token = None
+
+#     while True:
+#         response = service.files().list(
+#             q=f"'{folder_id}' in parents",
+#             fields="nextPageToken, files(id, name)",
+#             pageToken=page_token
+#         ).execute()
+
+#         files.extend(response.get('files', []))
+#         page_token = response.get('nextPageToken')
+
+#         if not page_token:
+#             break
+    
+#     # Print the number of files and their names for debugging
+#     print(f"Number of files in folder: {len(files)}")
+#     # for file in files:
+#     #     print(f"File name: {file['name']}, File ID: {file['id']}")
+    
+#     return files
+
+# def get_file_id(filename, files):
+#     for file in files:
+#         if file['name'] == filename:
+#             return file['id']
+#     return None
+
+csv_file_path = 'drive_files.csv'
+files_df = pd.read_csv(csv_file_path)
+
+def display_video(match_selection, half_selection, segment):
+    filename = f"{match_selection}-h{half_selection}-{segment}.mp4"
+    file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
+    # files = list_files_in_folder(FOLDER_ID)
+    # file_id = get_file_id(filename, files)
+    
+    if file_id:
+        #video_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+        #video_url = f"https://drive.google.com/file/d/{file_id}/view"
+        video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={time_within_segment}"
+
+
+        print(f"{filename} -> Video URL: {video_url}")  # Debug print statement
+        # Use an HTML video tag
+        #st.markdown(f'<video width="640" height="480" controls><source src="{video_url}" type="video/mp4">Your browser does not support the video tag.</video>', unsafe_allow_html=True)
+        st.markdown(f'<iframe src="{video_url}" width="640" height="480" frameborder="0" allow="autoplay"; encrypted-media" allowfullscreen></iframe>', unsafe_allow_html=True)
+        
+
+        
+        #st.video(video_url)
+        #
+    else:
+        st.error(f"Video '{filename}' not found in the folder.")
+
+
+display_video(match_selection, half_selection, segment)
 
