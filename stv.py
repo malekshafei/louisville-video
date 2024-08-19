@@ -67,8 +67,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"   
     
 )
-regular_font_path = 'Montserrat-Regular.ttf'
-bold_font_path = 'Montserrat-Bold.ttf'
+regular_font_path = '/Users/malekshafei/Downloads/Montserrat/static/Montserrat-Regular.ttf'
+bold_font_path = '/Users/malekshafei/Downloads/Montserrat/static/Montserrat-Bold.ttf'
+
 
 custom_css = f"""
 <style>
