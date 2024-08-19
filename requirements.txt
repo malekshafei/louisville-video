@@ -1,3 +1,5 @@
 matplotlib
 Pillow
 openpyxl
+statsbombpy
+mplsoccer
