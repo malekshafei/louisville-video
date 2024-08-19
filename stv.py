@@ -67,9 +67,18 @@ st.set_page_config(
     initial_sidebar_state="expanded"   
     
 )
+import os
 regular_font_path = '/Users/malekshafei/Downloads/Montserrat/static/Montserrat-Regular.ttf'
 bold_font_path = '/Users/malekshafei/Downloads/Montserrat/static/Montserrat-Bold.ttf'
+if os.path.isfile(regular_font_path):
+    fontManager.addfont(regular_font_path)
+else:
+    print(f"Font file not found: {regular_font_path}")
 
+if os.path.isfile(bold_font_path):
+    fontManager.addfont(bold_font_path)
+else:
+    print(f"Font file not found: {bold_font_path}")
 
 custom_css = f"""
 <style>
