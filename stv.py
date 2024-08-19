@@ -67,8 +67,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"   
     
 )
-regular_font_path = '/Users/malekshafei/Downloads/Montserrat/static/Montserrat-Regular.ttf'
-bold_font_path = '/Users/malekshafei/Downloads/Montserrat/static/Montserrat-Bold.ttf'
+regular_font_path = 'Montserrat-Regular.ttf'
+bold_font_path = 'Montserrat-Bold.ttf'
 
 custom_css = f"""
 <style>
@@ -472,7 +472,7 @@ def display_video(match_selection, half_selection, segment):
         print(f"{filename} -> Video URL: {video_url}")  # Debug print statement
         # Use an HTML video tag
         #st.markdown(f'<video width="640" height="480" controls><source src="{video_url}" type="video/mp4">Your browser does not support the video tag.</video>', unsafe_allow_html=True)
-        st.markdown(f'<iframe src="{video_url}" width="640" height="480" frameborder="0" allow="autoplay"; encrypted-media" allowfullscreen></iframe>', unsafe_allow_html=True)
+        st.markdown(f'<iframe src="{video_url}" width="704" height="528" frameborder="0" allow="autoplay"; encrypted-media" allowfullscreen></iframe>', unsafe_allow_html=True)
         
 
         
