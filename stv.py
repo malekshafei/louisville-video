@@ -470,10 +470,7 @@ files_df = pd.read_csv(csv_file_path)
 
 def display_video(match_selection, half_selection, segment):
     
-    if match_selection == 3930499:
-        filename = f"{match_selection}-h{half_selection}.mp4-{segment}.mp4"
-
-    else: filename = f"{match_selection}-h{half_selection}-{segment}.mp4"
+    filename = f"{match_selection}-h{half_selection}-{segment}.mp4"
     print(filename)
     file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
     # files = list_files_in_folder(FOLDER_ID)
