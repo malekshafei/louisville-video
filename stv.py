@@ -50,11 +50,11 @@ from matplotlib import rcParams
 
     
 from matplotlib.font_manager import fontManager, FontProperties
-font_path = '/Users/malekshafei/Downloads/Sen/static/Sen-Regular.ttf'
-fontManager.addfont(font_path)
-sen_font = FontProperties(fname=font_path).get_name()
-rcParams['font.family'] = sen_font
-rcParams['text.color'] = 'white' 
+# font_path = '/Users/malekshafei/Downloads/Sen/static/Sen-Regular.ttf'
+# fontManager.addfont(font_path)
+# sen_font = FontProperties(fname=font_path).get_name()
+# rcParams['font.family'] = sen_font
+# rcParams['text.color'] = 'white' 
 
 
 
