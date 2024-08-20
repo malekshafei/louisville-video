@@ -232,133 +232,132 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mplsoccer import Pitch
 
-# sequence_id = data[data['title'] == selection]['sequence_id'].values[0]
-# events = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/USL-verticality.parquet")
+sequence_id = data[data['title'] == selection]['sequence_id'].values[0]
+events = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/USL-verticality.parquet")
 
-# # Prepare the plot
-# pitch = Pitch(pitch_type='statsbomb', pitch_color='#400179', line_color='#c7d5cc', half=False, pad_top=4, corner_arcs=True)
-# fig, ax = pitch.draw(figsize=(12, 8))
-# fig.set_facecolor('#400179')
+# Prepare the plot
+pitch = Pitch(pitch_type='statsbomb', pitch_color='#400179', line_color='#c7d5cc', half=False, pad_top=4, corner_arcs=True)
+fig, ax = pitch.draw(figsize=(12, 8))
+fig.set_facecolor('#400179')
 
-# colors = ['white']  # Different colors for each sequence
-# legend_info = []
-
-
-# # Plot each sequence
-# sequence_group = events[events['sequence_id'] == sequence_id]
-# vert_row = data[data['sequence_id'] == sequence_id].iloc[0]
-# print(sequence_id)
-# #print(len(sequence_group))
-# sequence_group = sequence_group.sort_values(by=['timestamp', 'minute','second'])
-# first_event = sequence_group.iloc[0]
-# last_event = sequence_group.iloc[-1]
-
-# opponent = sequence_group['opp_team'].values[0]
-# date = sequence_group['clean_date'].values[0]
-# time = sequence_group['formatted_time'].values[0]
-# end_time = sequence_group['formatted_time'].values[-1]
+colors = ['white']  # Different colors for each sequence
+legend_info = []
 
 
+# Plot each sequence
+sequence_group = events[events['sequence_id'] == sequence_id]
+vert_row = data[data['sequence_id'] == sequence_id].iloc[0]
+print(sequence_id)
+#print(len(sequence_group))
+sequence_group = sequence_group.sort_values(by=['timestamp', 'minute','second'])
+first_event = sequence_group.iloc[0]
+last_event = sequence_group.iloc[-1]
 
-# time_info = f"{first_event['minute']}:{first_event['second']} - {last_event['minute']}:{last_event['second']}"
-# legend_label = f"{opponent} - {time_info}"
-# #legend_info.append((colors[idx % len(colors)], legend_label))
+opponent = sequence_group['opp_team'].values[0]
+date = sequence_group['clean_date'].values[0]
+time = sequence_group['formatted_time'].values[0]
+end_time = sequence_group['formatted_time'].values[-1]
 
 
 
+time_info = f"{first_event['minute']}:{first_event['second']} - {last_event['minute']}:{last_event['second']}"
+legend_label = f"{opponent} - {time_info}"
+#legend_info.append((colors[idx % len(colors)], legend_label))
 
-# a = 1
-# for i, event in sequence_group.iterrows():
 
-#     if event['type'] in ['Pass', 'Carry', 'Shot']:
-#         event_time = event['formatted_time']
-#         player = change_racing_names(event['player'])
-#         action = event['type']
+
+
+a = 1
+for i, event in sequence_group.iterrows():
+
+    if event['type'] in ['Pass', 'Carry', 'Shot']:
+        event_time = event['formatted_time']
+        player = change_racing_names(event['player'])
+        action = event['type']
         
 
-#         x_start = event['x']
-#         y_start = event['y']
+        x_start = event['x']
+        y_start = event['y']
 
-#         if event['type'] == 'Pass':
-#             linestyle='solid'
-#             x_end = event['pass_end_x']
-#             y_end = event['pass_end_y']
-#             legend_info.append(f"{a}. {player} - {action}")
+        if event['type'] == 'Pass':
+            linestyle='solid'
+            x_end = event['pass_end_x']
+            y_end = event['pass_end_y']
+            legend_info.append(f"{a}. {player} - {action}")
 
-#         elif event['type'] == 'Carry':
-#             linestyle='dashed'
-#             x_end = event['carry_end_x']
-#             y_end = event['carry_end_y']
-#             #print(x_end,y_end)
-#         else:
-#             #print("...")
-#             legend_info.append(f"{a}. {player} - {action}")
-#             #continue  # Skip this event if end location data is missing or not in the correct format
+        elif event['type'] == 'Carry':
+            linestyle='dashed'
+            x_end = event['carry_end_x']
+            y_end = event['carry_end_y']
+            #print(x_end,y_end)
+        else:
+            #print("...")
+            legend_info.append(f"{a}. {player} - {action}")
+            #continue  # Skip this event if end location data is missing or not in the correct format
 
-#         # Draw lines and scatter for each event in the sequence
-#         pitch.lines(x_start, y_start, x_end, y_end, ax=ax, color='white', linewidth=3.5, linestyle=linestyle)
-#         pitch.scatter(x_start, y_start, ax=ax, color='white', s = 250)
-#         pitch.scatter(x_end, y_end, ax=ax, color='white', s = 250)
+        # Draw lines and scatter for each event in the sequence
+        pitch.lines(x_start, y_start, x_end, y_end, ax=ax, color='white', linewidth=3.5, linestyle=linestyle)
+        pitch.scatter(x_start, y_start, ax=ax, color='white', s = 250)
+        pitch.scatter(x_end, y_end, ax=ax, color='white', s = 250)
 
-#         ax.text(x_start, y_start, str(a), fontsize=9, color='black', ha='center', va='center')
-#         a += 1
+        ax.text(x_start, y_start, str(a), fontsize=9, color='black', ha='center', va='center')
+        a += 1
 
-# if last_event['type'] == 'Ball Receipt*':
-#     x,y = last_event['x'], last_event['y']
-#     player = change_racing_names(last_event['player'])
-#     ax.text(x, y, str(a), fontsize=9, color='black', ha='center', va='center')
-#     legend_info.append(f"{a}. {player} - Reception")
+if last_event['type'] == 'Ball Receipt*':
+    x,y = last_event['x'], last_event['y']
+    player = change_racing_names(last_event['player'])
+    ax.text(x, y, str(a), fontsize=9, color='black', ha='center', va='center')
+    legend_info.append(f"{a}. {player} - Reception")
     
     
 
-# def ordinal(x):
-#     if x >= 99: return "Top 1%"
-#     elif x >= 50: return f"Top {100-int(x)}%"
-#     elif x <= 1: return "Bottom 1%"
-#     else: return f"Bottom {int(x)}%"
+def ordinal(x):
+    if x >= 99: return "Top 1%"
+    elif x >= 50: return f"Top {100-int(x)}%"
+    elif x <= 1: return "Bottom 1%"
+    else: return f"Bottom {int(x)}%"
 
-# for label in legend_info:
-#     ax.plot([], [], color='black', label=label)
-# ax.legend(loc='lower left',facecolor='#400179', edgecolor='None', title='Actions', fontsize = 12)
-# # Add titles and legend
-# ax.set_title(f"{date} Box Entry vs {opponent} - {time} - {end_time}", fontsize=20)
-
-
+for label in legend_info:
+    ax.plot([], [], color='black', label=label)
+ax.legend(loc='lower left',facecolor='#400179', edgecolor='None', title='Actions', fontsize = 12)
+# Add titles and legend
+ax.set_title(f"{date} Box Entry vs {opponent} - {time} - {end_time}", fontsize=20)
 
 
-# seq_pct_net_forward = int(vert_row['seq_pct_net_forward'] * 100)
-# pct_seq_pct_net_forward = int(vert_row['pct_seq_pct_net_forward'])
-# verticality_score = round(vert_row['ovr_verticality'],1)
 
 
-# seq_speed = round(vert_row['seq_speed'],1)
-# pct_seq_speed = round(vert_row['pct_seq_speed'],1)
-# #print(pct_seq_speed)
-# subtitle_1 = f"Verticality Score: {verticality_score}"
-# subtitle_0 = f"{seq_pct_net_forward}% of Passes Forward ({ordinal(pct_seq_pct_net_forward)})"
-# subtitle_2 = f"{seq_speed} m/s  ({ordinal(pct_seq_speed)})"
+seq_pct_net_forward = int(vert_row['seq_pct_net_forward'] * 100)
+pct_seq_pct_net_forward = int(vert_row['pct_seq_pct_net_forward'])
+verticality_score = round(vert_row['ovr_verticality'],1)
+
+
+seq_speed = round(vert_row['seq_speed'],1)
+pct_seq_speed = round(vert_row['pct_seq_speed'],1)
+#print(pct_seq_speed)
+subtitle_1 = f"Verticality Score: {verticality_score}"
+subtitle_0 = f"{seq_pct_net_forward}% of Passes Forward ({ordinal(pct_seq_pct_net_forward)})"
+subtitle_2 = f"{seq_speed} m/s  ({ordinal(pct_seq_speed)})"
     
-# ax.text(0.5, 0.98, subtitle_1, ha='center', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
-# ax.text(0.05, 0.98, subtitle_0, ha='left', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
-# ax.text(0.85, 0.98, subtitle_2, ha='right', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
+ax.text(0.5, 0.98, subtitle_1, ha='center', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
+ax.text(0.05, 0.98, subtitle_0, ha='left', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
+ax.text(0.85, 0.98, subtitle_2, ha='right', va='center', fontsize=14, transform=ax.transAxes, color = 'white')
 
 
 
-# buf = io.BytesIO()
-# plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+buf = io.BytesIO()
+plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
 
-# plt.savefig("/Users/malekshafei/Downloads/812test.png")
-# #fig.savefig("PIctestjuly3", format='png', bbox_inches='tight', pad_inches=0)
+plt.savefig("/Users/malekshafei/Downloads/812test.png")
+#fig.savefig("PIctestjuly3", format='png', bbox_inches='tight', pad_inches=0)
 
-# buf.seek(0)
+buf.seek(0)
 
 
-# # plt.savefig("PIctestjuly3.png")
+# plt.savefig("PIctestjuly3.png")
 
-# #st.pyplot(plt)
+#st.pyplot(plt)
 
     
-# st.image(buf, use_column_width=True)
 
 
 # match_selection = data.loc[data['title'] == selection]['match_id'].values[0]
@@ -494,3 +493,4 @@ def display_video(match_selection, half_selection, segment):
 
 display_video(match_selection, half_selection, segment)
 
+st.image(buf, use_column_width=True)
