@@ -54,7 +54,7 @@ from matplotlib.font_manager import fontManager, FontProperties
 # fontManager.addfont(font_path)
 # sen_font = FontProperties(fname=font_path).get_name()
 # rcParams['font.family'] = sen_font
-# rcParams['text.color'] = 'white' 
+rcParams['text.color'] = 'white' 
 
 
 
