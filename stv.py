@@ -348,7 +348,7 @@ ax.text(0.85, 0.98, subtitle_2, ha='right', va='center', fontsize=14, transform=
 buf = io.BytesIO()
 plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
 
-plt.savefig("/Users/malekshafei/Downloads/812test.png")
+# plt.savefig("/Users/malekshafei/Downloads/812test.png")
 #fig.savefig("PIctestjuly3", format='png', bbox_inches='tight', pad_inches=0)
 
 buf.seek(0)
