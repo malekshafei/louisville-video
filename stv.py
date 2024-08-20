@@ -318,10 +318,10 @@ def ordinal(x):
     else: return f"Bottom {int(x)}%"
 
 for label in legend_info:
-    ax.plot([], [], color='black', label=label)
+    ax.plot([], [], color='white', label=label)
 ax.legend(loc='lower left',facecolor='#400179', edgecolor='None', title='Actions', fontsize = 12)
 # Add titles and legend
-ax.set_title(f"{date} Box Entry vs {opponent} - {time} - {end_time}", fontsize=20)
+ax.set_title(f"{date} Box Entry vs {opponent} - {time} - {end_time}", fontsize=20, color = 'white')
 
 
 
