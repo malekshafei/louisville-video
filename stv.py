@@ -235,6 +235,7 @@ from mplsoccer import Pitch
 sequence_id = data[data['title'] == selection]['sequence_id'].values[0]
 #events = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/USL-verticality.parquet")
 events = pd.read_parquet("USL-verticality.parquet")
+print('read file')
 
 # Prepare the plot
 pitch = Pitch(pitch_type='statsbomb', pitch_color='#400179', line_color='#c7d5cc', half=False, pad_top=4, corner_arcs=True)
