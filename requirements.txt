@@ -1,4 +1,6 @@
 matplotlib
 Pillow
 openpyxl
-
+statsbombpy
+mplsoccer
+streamlit
