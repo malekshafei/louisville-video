@@ -121,6 +121,8 @@ match_ids = [3930232, 3930247, 3930255, 3930266, 3930274, 3930288, 3930307,
 
 
 
+
+
 def custom_progress_bar(value, label):
     if value > 75:
         color = "#4CAF50"  # Green
@@ -709,7 +711,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 
                 else: return x
 
-            def playerPics(x):
+            def playerPics(x): 
                 if x == 'Wilson Harris': return "LouCityPlayerPhotos/Harris.png"
                 elif x == 'Arturo Osuna Ordoñez': return "LouCityPlayerPhotos/Ordonez.png"
                 elif x == 'Amadou Dia': return "LouCityPlayerPhotos/Dia.png"
@@ -736,7 +738,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 else: return "LouCityPlayerPhotos/EmptyPhoto.png"
                 
             def add_player_image(ax, player, x, y, width, height):
-                img = plt.imread(playerPics(player))
+                img = plt.imread(playerPics(player)) 
                 
                 # Calculate zoom to fit the image to the bin size
                 img_height, img_width = img.shape[:2]
@@ -984,26 +986,33 @@ if individual == 'Team' and len(selected_ids) > 0:
             st.session_state.clip_index_t1 = 0
         def update_index(step):
             new_index = st.session_state.clip_index_t1 + step
-            if 0 <= new_index < len(clip_titles):
+            if 0 <= new_index < len(clip_titles_t1):
                 st.session_state.clip_index_t1 = new_index
-                st.session_state.clip_selector_t1 = clip_titles[new_index]
+                print("")
+                print("")
+                print("")
+
+                print(st.session_state.clip_index_t1)
+                print(st.session_state.clip_selector_t1)
+
+                st.session_state.clip_selector_t1 = clip_titles_t1[new_index]
 
         sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
-        clip_titles = sorted_data['title'].tolist()
+        clip_titles_t1 = sorted_data['title'].tolist()
 
         
         with col2:
             #selection = st.selectbox('Choose Clip', data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False,True,True])['title'])
             # sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
-            # clip_titles = sorted_data['title'].tolist()
+            # clip_titles_t1 = sorted_data['title'].tolist()
 
 
-            #selection = st.selectbox('Choose Clip', clip_titles, index=st.session_state.clip_index)
+            #selection = st.selectbox('Choose Clip', clip_titles_t1, index=st.session_state.clip_index)
             print("index", st.session_state.clip_index_t1)
-            print(len(clip_titles))
-            selection = st.selectbox('Choose Clip', clip_titles, index=st.session_state.clip_index_t1, key='clip_selector_t1')
-            if selection != clip_titles[st.session_state.clip_index_t1]:
-                st.session_state.clip_index_t1 = clip_titles.index(selection)
+            print(len(clip_titles_t1))
+            selection = st.selectbox('Choose Clip', clip_titles_t1, index=st.session_state.clip_index_t1, key='clip_selector_t1')
+            if selection != clip_titles_t1[st.session_state.clip_index_t1]:
+                st.session_state.clip_index_t1 = clip_titles_t1.index(selection)
 
             
  
@@ -1079,10 +1088,10 @@ if individual == 'Team' and len(selected_ids) > 0:
         st.button("Previous Clip", on_click=update_index, args=(-1,), disabled=(st.session_state.clip_index_t1 <= 0), key="prev_clip_button_t1")
 
         # with col2:
-        st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t1 >= len(clip_titles) - 1), key="next_clip_button_t1")
+        st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t1 >= len(clip_titles_t1) - 1), key="next_clip_button_t1")
 
         # # Force rerun if the index has changed
-        # if st.session_state.clip_index != clip_titles.index(selection):
+        # if st.session_state.clip_index != clip_titles_t1.index(selection):
         #     st.rerun()
 
         #st.video("lou-video-test/3930499-h2-93.mp4")
@@ -1378,26 +1387,26 @@ if individual == 'Team' and len(selected_ids) > 0:
             st.session_state.clip_index_t2 = 0
         def update_index(step):
             new_index = st.session_state.clip_index_t2 + step
-            if 0 <= new_index < len(clip_titles):
+            if 0 <= new_index < len(clip_titles_t2):
                 st.session_state.clip_index_t2 = new_index
-                st.session_state.clip_selector_t2 = clip_titles[new_index]
+                st.session_state.clip_selector_t2 = clip_titles_t2[new_index]
 
         sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
-        clip_titles = sorted_data['title'].tolist()
+        clip_titles_t2 = sorted_data['title'].tolist()
 
         
         with col2:
             #selection = st.selectbox('Choose Clip', data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False,True,True])['title'])
             # sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
-            # clip_titles = sorted_data['title'].tolist()
+            # clip_titles_t2 = sorted_data['title'].tolist()
 
 
-            #selection = st.selectbox('Choose Clip', clip_titles, index=st.session_state.clip_index)
+            #selection = st.selectbox('Choose Clip', clip_titles_t2, index=st.session_state.clip_index)
             print("index", st.session_state.clip_index_t2)
-            print(len(clip_titles))
-            selection = st.selectbox('Choose Clip', clip_titles, index=st.session_state.clip_index_t2, key='clip_selector_t2')
-            if selection != clip_titles[st.session_state.clip_index_t2]:
-                st.session_state.clip_index_t2 = clip_titles.index(selection)
+            print(len(clip_titles_t2))
+            selection = st.selectbox('Choose Clip', clip_titles_t2, index=st.session_state.clip_index_t2, key='clip_selector_t2')
+            if selection != clip_titles_t2[st.session_state.clip_index_t2]:
+                st.session_state.clip_index_t2 = clip_titles_t2.index(selection)
 
             
  
@@ -1473,7 +1482,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         st.button("Previous Clip", on_click=update_index, args=(-1,), disabled=(st.session_state.clip_index_t2 <= 0), key="prev_clip_button_t2")
 
         # with col2:
-        st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t2 >= len(clip_titles) - 1), key="next_clip_button_t2")
+        st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t2 >= len(clip_titles_t2) - 1), key="next_clip_button_t2")
          
 
 
