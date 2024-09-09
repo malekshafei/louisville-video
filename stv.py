@@ -155,7 +155,8 @@ player_list = ['Arturo Ordoñez', 'Sean Totsch', 'Kyle Adams', 'Wesley Charpie']
 
 with st.sidebar:
     #team = st.selectbox('Select Team', ['Louisville City'])
-    individual = st.radio('Team or Player Analyis?', ['Team', 'Player'])
+    #individual = st.radio('Team or Player Analyis?', ['Team', 'Player'])
+    individual = st.radio('Team or Player Analyis?', ['Team'])
     if individual == 'Player': 
         player_selection = st.selectbox('Choose Player', player_list)
     full = 'Full Season'
