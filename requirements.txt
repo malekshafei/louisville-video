@@ -4,3 +4,5 @@ openpyxl
 statsbombpy
 mplsoccer
 streamlit
+plotly
+plotly.express
