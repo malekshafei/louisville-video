@@ -182,7 +182,7 @@ with st.sidebar:
         if selected_ids == []:
             st.error("Please select at least one match")
 
-    league_data = pd.read_parquet(f"TeamMatchLevelVideo.parquet")
+    league_data = pd.read_parquet(f"{league}TeamMatchLevelVideo.parquet")
     full_team_data = league_data[league_data['Team'] == selected_team]
     
     team_data = league_data[(league_data['match_id'].isin(selected_ids)) & (league_data['Team'] == selected_team)]
@@ -536,7 +536,7 @@ if individual == 'Team' and len(selected_ids) > 0:
             # # Get the number of team games and league games
             
 
-            # pressures = pd.read_parquet(f"VideoPressureEvents.parquet")
+            # pressures = pd.read_parquet(f"{league}VideoPressureEvents.parquet")
             # team_pressures = pressures[(pressures['team'] == selected_team) & (pressures['match_id'].isin(selected_ids))]
             # league_pressures = pressures[pressures['team'] != selected_team]
 
@@ -774,7 +774,7 @@ if individual == 'Team' and len(selected_ids) > 0:
             # Get the number of team games and league games
 
 
-            pressures = pd.read_parquet(f"VideoPressureEvents.parquet")
+            pressures = pd.read_parquet(f"{league}VideoPressureEvents.parquet")
             team_pressures = pressures[(pressures['team'] == selected_team) & (pressures['match_id'].isin(selected_ids))]
             league_pressures = pressures[pressures['team'] != selected_team]
 
@@ -1322,7 +1322,7 @@ if individual == 'Team' and len(selected_ids) > 0:
             fig,ax = pitch.draw(figsize=(6,8))
             fig.set_facecolor('black')
 
-            gk_events = pd.read_parquet(f"VideoGoalKickEvents.parquet")
+            gk_events = pd.read_parquet(f"{league}VideoGoalKickEvents.parquet")
 
             gk_events = gk_events[gk_events['match_id'].isin(selected_ids)]
 
