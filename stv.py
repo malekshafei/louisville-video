@@ -30,7 +30,7 @@ rcParams['text.color'] = 'white'
 # file_name = 'InternationalWomensData.parquet'
 # df = pd.read_parquet(file_name)
 st.set_page_config( 
-    page_title="Racing Recruitment",
+    page_title="LouCity Video",
     page_icon=":checkered_flag:",
     layout="centered",
     initial_sidebar_state="expanded"   
@@ -269,9 +269,9 @@ with st.sidebar:
         pct1 = team_rankings[team_rankings['Team'] == selected_team]['Pressing Rating'].values[0]
         
         pct2 = team_rankings[team_rankings['Team'] == selected_team]['Goal Kick Buildout Rating'].values[0]
-        pct3 = 74
-        pct4 = 44 
-        pct5 = 99
+        pct3 = 0
+        pct4 = 0 
+        pct5 = 0
         custom_progress_bar(int(round(pct1,0)), "Pressing")
         custom_progress_bar(int(round(pct2,0)), "Goal Kick Buildouts")
         custom_progress_bar(int(pct3), "Verticality")
