@@ -501,7 +501,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         with col2:
             
 
-            # mins = pd.read_parquet(f"/Users/malekshafei/Desktop/Louisville/TeamMinutesPerGame.parquet")
+            # mins = pd.read_parquet(f"TeamMinutesPerGame.parquet")
             # def short_names(x):
             #     if x == 'Ray Serrano Lopez': return 'Ray Serrano'
             #     elif x == 'Jorge Gonzalez Asensi': return 'Jorge Gonzalez'
@@ -681,7 +681,7 @@ if individual == 'Team' and len(selected_ids) > 0:
 
             from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
-            mins = pd.read_parquet(f"/Users/malekshafei/Desktop/Louisville/TeamMinutesPerGame.parquet")
+            mins = pd.read_parquet(f"TeamMinutesPerGame.parquet")
             def short_names(x):
                 if x == 'Ray Serrano Lopez': return 'R. Serrano'
                 elif x == 'Jorge Gonzalez Asensi': return 'J. Gonzalez'
@@ -965,9 +965,9 @@ if individual == 'Team' and len(selected_ids) > 0:
             ['Attacking Half Regains', 'Box Entries after Regains', 'Shots after Press Regains']
             )
         
-        if metric == 'Attacking Half Regains': data = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/att_half_regains_video_events.parquet")
-        elif metric == 'Box Entries after Regains': data = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/regains_to_box_entry_video_events.parquet")
-        elif metric == 'Shots after Press Regains': data = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/press_to_shot_video_events.parquet")
+        if metric == 'Attacking Half Regains': data = pd.read_parquet("att_half_regains_video_events.parquet")
+        elif metric == 'Box Entries after Regains': data = pd.read_parquet("regains_to_box_entry_video_events.parquet")
+        elif metric == 'Shots after Press Regains': data = pd.read_parquet("press_to_shot_video_events.parquet")
         data = data.drop_duplicates(subset = ['match_id', 'period', 'minute']).reset_index()
 
         data = data[data['match_id'].isin(selected_ids)].reset_index()
@@ -1085,7 +1085,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         # if st.session_state.clip_index != clip_titles.index(selection):
         #     st.rerun()
 
-        #st.video("/Users/malekshafei/Desktop/Louisville/lou-video-test/3930499-h2-93.mp4")
+        #st.video("lou-video-test/3930499-h2-93.mp4")
 
 
     with tab2:
@@ -1358,10 +1358,10 @@ if individual == 'Team' and len(selected_ids) > 0:
             ['Short Goal Kick Buildouts', 'Own Half Turnovers', 'To Final Third', 'Long Goal Kicks']
             )
         
-        if metric == 'Short Goal Kick Buildouts': data = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/gk_short_buildups_video_events.parquet")
-        elif metric == 'Own Half Turnovers': data = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/gk_short_buildups_h1_turnover_video_events.parquet")
-        elif metric == 'To Final Third': data = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/gk_short_buildups_to_final_third_video_events.parquet")
-        elif metric == 'Long Goal Kicks': data = pd.read_parquet("/Users/malekshafei/Desktop/Louisville/gk_long_buildups_video_events.parquet")
+        if metric == 'Short Goal Kick Buildouts': data = pd.read_parquet("gk_short_buildups_video_events.parquet")
+        elif metric == 'Own Half Turnovers': data = pd.read_parquet("gk_short_buildups_h1_turnover_video_events.parquet")
+        elif metric == 'To Final Third': data = pd.read_parquet("gk_short_buildups_to_final_third_video_events.parquet")
+        elif metric == 'Long Goal Kicks': data = pd.read_parquet("gk_long_buildups_video_events.parquet")
         data = data.drop_duplicates(subset = ['match_id', 'period', 'minute']).reset_index()
 
         data = data[data['match_id'].isin(selected_ids)].reset_index()
