@@ -6,3 +6,4 @@ mplsoccer
 streamlit
 plotly
 plotly.express
+streamlit_plotly_events
