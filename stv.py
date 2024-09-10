@@ -5,7 +5,10 @@ import matplotlib.pyplot as plt
 from statsbombpy import sb
 import plotly.express as px
 import plotly.graph_objects as go
-
+from streamlit_plotly_events import plotly_events
+print('')
+print('new run')
+print('')
 creds = {"user": "rdell@racingloufc.com", "passwd": "8CStqFOa"}
 
 
@@ -77,9 +80,29 @@ img[data-testid="stLogo"] {{
             height: 3rem;
 }}
 
+
+
 </style>
 """
+# div[data-testid="stVerticalBlock"] {{
+#     gap: 0rem;
+# }}
+# div[data-testid="stHorizontalBlock"] {{
+#         gap: 0rem;
+#         margin-bottom: 0rem;
+#     }}
 st.markdown(custom_css, unsafe_allow_html=True)
+def show_video(video_url):
+    st.session_state.video_url = video_url
+    st.session_state.show_video = True
+def close_video():
+    st.session_state.show_video = False
+    st.session_state.video_url = ""
+if 'show_video' not in st.session_state:
+    st.session_state.show_video = True
+    st.session_state.video_url = ""
+
+
 
 st.logo("https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Louisville_City_FC_2020_logo_primary.svg/160px-Louisville_City_FC_2020_logo_primary.svg.png")
 
@@ -121,6 +144,63 @@ match_ids = [3930232, 3930247, 3930255, 3930266, 3930274, 3930288, 3930307,
 
 
 
+import plotly.graph_objects as go
+
+def create_pitch(fw = 600, fh = 400):
+    """
+    Creates a soccer pitch figure using Plotly.
+    
+    Parameters:
+    pitch_length (int): Length of the pitch in meters.
+    pitch_width (int): Width of the pitch in meters.
+    
+    Returns:
+    fig (go.Figure): A Plotly figure object representing the soccer pitch.
+    """
+    # Create a figure
+    fig = go.Figure()
+    pitch_length=120
+    pitch_width=80
+
+    # Add the pitch outline (four lines)
+    fig.add_shape(type="rect", x0=0, y0=0, x1=pitch_length, y1=pitch_width, line=dict(color="white"))
+
+    # Halfway line
+    fig.add_shape(type="line", x0=pitch_length/2, y0=0, x1=pitch_length/2, y1=pitch_width, line=dict(color="white"))
+
+    # Penalty areas
+    fig.add_shape(type="rect", x0=0, y0=pitch_width/2 - 18, x1=18, y1=pitch_width/2 + 18, line=dict(color="white"))
+    fig.add_shape(type="rect", x0=pitch_length - 18, y0=pitch_width/2 - 18, x1=pitch_length, y1=pitch_width/2 + 18, line=dict(color="white"))
+
+    # 6-yard boxes
+    fig.add_shape(type="rect", x0=0, y0=pitch_width/2 - 6, x1=6, y1=pitch_width/2 + 6, line=dict(color="white"))
+    fig.add_shape(type="rect", x0=pitch_length - 6, y0=pitch_width/2 - 6, x1=pitch_length, y1=pitch_width/2 + 6, line=dict(color="white"))
+
+    # Circles for center and penalty spots
+    fig.add_shape(type="circle", x0=pitch_length/2 - 10, y0=pitch_width/2 - 10, x1=pitch_length/2 + 10, y1=pitch_width/2 + 10, line=dict(color="white"))
+    fig.add_shape(type="circle", x0=pitch_length/2 - 0.5, y0=pitch_width/2 - 0.5, x1=pitch_length/2 + 0.5, y1=pitch_width/2 + 0.5, fillcolor="white", line=dict(color="white"))
+
+    # Left and Right penalty spots
+    fig.add_shape(type="circle", x0=12 - 0.3, y0=pitch_width/2 - 0.3, x1=12 + 0.3, y1=pitch_width/2 + 0.3, fillcolor="white", line=dict(color="white"))
+    fig.add_shape(type="circle", x0=pitch_length - 12 - 0.3, y0=pitch_width/2 - 0.3, x1=pitch_length - 12 + 0.3, y1=pitch_width/2 + 0.3, fillcolor="white", line=dict(color="white"))
+
+    # Penalty arcs (left and right)
+    fig.add_shape(type="path", path=f"M 18 {pitch_width/2 + 10} Q 24 {pitch_width/2} 18 {pitch_width/2 - 10}", line=dict(color="white"))
+    fig.add_shape(type="path", path=f"M {pitch_length - 18} {pitch_width/2 + 10} Q {pitch_length - 24} {pitch_width/2} {pitch_length - 18} {pitch_width/2 - 10}", line=dict(color="white"))
+
+    # Set the background color of the pitch and configure axes
+    fig.update_layout(
+        plot_bgcolor="black",
+        paper_bgcolor="black",
+        xaxis=dict(range=[0, pitch_length], showgrid=False, zeroline=False, visible=False),
+        yaxis=dict(range=[pitch_width, 0], showgrid=False, zeroline=False, visible=False),
+        margin=dict(t=30, b=30, l=30, r=30),
+        autosize=False,
+        width=fw,
+        height=fh
+    )
+
+    return fig
 
 
 def custom_progress_bar(value, label):
@@ -246,30 +326,18 @@ with st.sidebar:
                
     team_rankings['Goal Kick Buildouts'] = ((0.3 * team_rankings['pctAvg. Distance Reached']) + (0.15 * team_rankings['pctAvg. Buildup Speed']) + (0.4 * team_rankings['pct% -> Att. Half']) + (0.15 * team_rankings['pctPasses per Sequence']))
     #team_rankings['pctShort GK Buildups'] = round(team_rankings['Short GK Buildups'].rank(pct=True) * 100,2)
-    team_rankings['Goal Kick Buildout Rating'] = round(team_rankings['Goal Kick Buildouts'],1)
-
-
-
-
-
-    
-    
-    
+    team_rankings['Buildout Score'] = round(team_rankings['Goal Kick Buildouts'],1)
 
 
 
 
 
 
-
-
-
-
-    print(selected_ids)
+    #print(selected_ids)
     if individual == 'Team' and len(selected_ids) > 0:
         pct1 = team_rankings[team_rankings['Team'] == selected_team]['Pressing Rating'].values[0]
         
-        pct2 = team_rankings[team_rankings['Team'] == selected_team]['Goal Kick Buildout Rating'].values[0]
+        pct2 = team_rankings[team_rankings['Team'] == selected_team]['Buildout Score'].values[0]
         pct3 = 0
         pct4 = 0 
         pct5 = 0
@@ -279,6 +347,34 @@ with st.sidebar:
         custom_progress_bar(int(pct4), "Changing Point of Attack")
         custom_progress_bar(int(pct5), "Crossing")
 
+   
+
+
+    if 'selected_points' not in st.session_state:
+        st.session_state.selected_points = False
+
+    n1 = 0
+    n2 = 0
+
+    print(n1,n2)
+
+   
+
+    # if st.button("Close Video"):
+    #     print('stoppp')
+    #     st.session_state.selected_points = False
+    #     st.session_state.show_video = False
+    #     #st.session_state.video_url = ""
+    closed = st.button("Close Video")
+
+    if closed:
+        #st.session_state.selected_points = False
+        st.session_state.show_video = False
+        n2 += 1
+            
+
+
+     
     if individual == 'Player':
         pct1 = 24
         pct2 = 26
@@ -293,6 +389,8 @@ with st.sidebar:
 if individual == 'Team' and len(selected_ids) > 0:    
     tab1, tab2, tab3, tab4, tab5 = st.tabs(['Pressing', 'Goal Kick Buildouts', 'Verticality','Changing Point of Attack', 'Crossing'])
 
+    if 'active_tab' not in st.session_state:
+        st.session_state.active_tab = "Verticality"
     ## Pressing
     with tab1:
         pct1 = team_rankings[team_rankings['Team'] == selected_team]['pctAtt. Third Pressures'].values[0]
@@ -327,7 +425,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'PPDA',
                 'Shots after Pressure Regains',
                 'Att. Half Regains']
-        print(metrics)
+        #print(metrics)
         if 'selected_metrics_t1' not in st.session_state:
             #st.session_state.selected_metrics = metrics[:2]  # Default to first two metrics
             st.session_state.selected_metrics_t1 = ['Avg. Defensive Distance', 'PPDA']
@@ -382,7 +480,12 @@ if individual == 'Team' and len(selected_ids) > 0:
                     'title': "Match",
                     'tickangle': -40
                     },
-                'yaxis': {'title': selected_metrics[0], 'side': "left"},
+                'yaxis': {
+                    'title': selected_metrics[0], 
+                    'side': "left",
+                    'titlefont': {'color': 'white'}
+
+                    },
                 'legend': {
                     'orientation': "h",
                     'yanchor': "bottom",
@@ -396,7 +499,12 @@ if individual == 'Team' and len(selected_ids) > 0:
 
             # Add second y-axis if two metrics are selected
             if len(selected_metrics) == 2:
-                layout['yaxis2'] = {'title': selected_metrics[1], 'side': "right", 'overlaying': "y"}
+                layout['yaxis2'] = {
+                    'title': selected_metrics[1], 
+                    'side': "right", 
+                    'overlaying': "y",
+                    'titlefont': {'color': 'purple'}
+                }
             
             if selected_metrics[0] in neg_cols:
                 layout['yaxis']['autorange'] = 'reversed'
@@ -405,7 +513,7 @@ if individual == 'Team' and len(selected_ids) > 0:
 
             fig.update_layout(layout)
 
-            print(st.session_state.selected_metrics_t1)
+            #print(st.session_state.selected_metrics_t1)
 
             return fig
 
@@ -989,12 +1097,12 @@ if individual == 'Team' and len(selected_ids) > 0:
             new_index = st.session_state.clip_index_t1 + step
             if 0 <= new_index < len(clip_titles_t1):
                 st.session_state.clip_index_t1 = new_index
-                print("")
-                print("")
-                print("")
+                # print("")
+                # print("")
+                # print("")
 
-                print(st.session_state.clip_index_t1)
-                print(st.session_state.clip_selector_t1)
+                # print(st.session_state.clip_index_t1)
+                # print(st.session_state.clip_selector_t1)
 
                 st.session_state.clip_selector_t1 = clip_titles_t1[new_index]
 
@@ -1009,8 +1117,8 @@ if individual == 'Team' and len(selected_ids) > 0:
 
 
             #selection = st.selectbox('Choose Clip', clip_titles_t1, index=st.session_state.clip_index)
-            print("index", st.session_state.clip_index_t1)
-            print(len(clip_titles_t1))
+            #print("index", st.session_state.clip_index_t1)
+            #print(len(clip_titles_t1))
             selection = st.selectbox('Choose Clip', clip_titles_t1, index=st.session_state.clip_index_t1, key='clip_selector_t1')
             if selection != clip_titles_t1[st.session_state.clip_index_t1]:
                 st.session_state.clip_index_t1 = clip_titles_t1.index(selection)
@@ -1047,7 +1155,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         # overlap = 30  # 30 seconds overlap
 
         time_str = time_selection[3:8]
-        print(time_str)
+        #print(time_str)
         segment, time_within_segment = find_closest_segment_with_times(time_str)
 
 
@@ -1057,7 +1165,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         def display_video(match_selection, half_selection, segment):
             
             filename = f"{match_selection}-h{half_selection}-{segment}.mp4"
-            print(filename)
+            #print(filename)
             file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
             # files = list_files_in_folder(FOLDER_ID)
             # file_id = get_file_id(filename, files)
@@ -1068,7 +1176,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={time_within_segment}"
 
 
-                print(f"{filename} -> Video URL: {video_url}")  # Debug print statement
+                #print(f"{filename} -> Video URL: {video_url}")  # Debug print statement
                 # Use an HTML video tag
                 #st.markdown(f'<video width="640" height="480" controls><source src="{video_url}" type="video/mp4">Your browser does not support the video tag.</video>', unsafe_allow_html=True)
                 st.markdown(f'<iframe src="{video_url}" width="704" height="528" frameborder="0" allow="autoplay"; encrypted-media" allowfullscreen></iframe>', unsafe_allow_html=True)
@@ -1133,7 +1241,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                     'Avg. Distance Reached',
                     '% -> Att. Half',
                     '% -> Att. Third']
-        print(metrics)
+        #print(metrics)
         if 'selected_metrics_t2' not in st.session_state:
             #st.session_state.selected_metrics = metrics[:2]  # Default to first two metrics
             st.session_state.selected_metrics_t2 = ['Avg. Buildup Speed', '% -> Att. Half']
@@ -1201,7 +1309,12 @@ if individual == 'Team' and len(selected_ids) > 0:
 
             # Add second y-axis if two metrics are selected
             if len(selected_metrics) == 2:
-                layout['yaxis2'] = {'title': selected_metrics[1], 'side': "right", 'overlaying': "y"}
+                layout['yaxis2'] = {
+                    'title': selected_metrics[1], 
+                    'side': "right", 
+                    'overlaying': "y",
+                    'titlefont': {'color': 'purple'}
+                }
             
             if selected_metrics[0] in neg_cols:
                 layout['yaxis']['autorange'] = 'reversed'
@@ -1210,7 +1323,7 @@ if individual == 'Team' and len(selected_ids) > 0:
 
             fig.update_layout(layout)
 
-            print(st.session_state.selected_metrics_t2)
+            #print(st.session_state.selected_metrics_t2)
 
             return fig
 
@@ -1241,7 +1354,7 @@ if individual == 'Team' and len(selected_ids) > 0:
 
 
 
-        col1, col2 = st.columns(2)
+        col1, col2 = st.columns([0.9, 2])#st.columns(2)
         with col1:
             if len(selected_ids) <= 5:
                 team_rankings2 = league_data.groupby('Team').agg(aggs).reset_index()
@@ -1264,7 +1377,7 @@ if individual == 'Team' and len(selected_ids) > 0:
 
                 team_rankings2['Goal Kick Buildouts'] = ((0.3 * team_rankings2['pctAvg. Distance Reached']) + (0.15 * team_rankings2['pctAvg. Buildup Speed']) + (0.4 * team_rankings2['pct% -> Att. Half']) + (0.15 * team_rankings2['pctPasses per Sequence']))
                 #team_rankings['pctShort GK Buildups'] = round(team_rankings['Short GK Buildups'].rank(pct=True) * 100,2)
-                team_rankings2['Goal Kick Buildout Rating'] = round(team_rankings2['Goal Kick Buildouts'],1)
+                team_rankings2['Buildout Score'] = round(team_rankings2['Goal Kick Buildouts'],1)
 
 
 
@@ -1282,8 +1395,9 @@ if individual == 'Team' and len(selected_ids) > 0:
 
             for col in orig_cols:
                 team_rankings[col] = round(team_rankings[col],2)
-                shortened_gk_data = team_rankings.sort_values(by = 'Goal Kick Buildout Rating', ascending=False)
-                shortened_gk_data = shortened_gk_data[['Team','Matches', 'Goal Kick Buildout Rating', '% of Goal Kicks Short', 'Passes per Sequence', 'Avg. Buildup Speed', 'Avg. Distance Reached','% -> Att. Half', '% -> Att. Third']]
+                shortened_gk_data = team_rankings.sort_values(by = 'Buildout Score', ascending=False)
+                #shortened_gk_data = shortened_gk_data[['Team','Matches', 'Buildout Score', '% of Goal Kicks Short', 'Passes per Sequence', 'Avg. Buildup Speed', 'Avg. Distance Reached','% -> Att. Half', '% -> Att. Third']]
+                shortened_gk_data = shortened_gk_data[['Team','Buildout Score','Matches',  '% of Goal Kicks Short', 'Passes per Sequence', 'Avg. Buildup Speed', 'Avg. Distance Reached','% -> Att. Half', '% -> Att. Third']]
                 #st.write(shortened_pressing_data)
 
             shortened_gk_data['Team'] = shortened_gk_data['Team'].replace({
@@ -1314,53 +1428,125 @@ if individual == 'Team' and len(selected_ids) > 0:
 
             
         with col2:
-            import matplotlib.pyplot as plt
-            import numpy as np
-            import pandas as pd
-            from mplsoccer.pitch import Pitch
-            import io
-            import streamlit as st
+            
+            # import matplotlib.pyplot as plt
+            # import numpy as np
+            # import pandas as pd
+            # from mplsoccer.pitch import Pitch
+            # import io
+            # import streamlit as st
 
-            # Define pitch dimensions for a 'statsbomb' pitch
-            pitch_length = 120
-            pitch_width = 80
+            # # Define pitch dimensions for a 'statsbomb' pitch
+            # pitch_length = 120
+            # pitch_width = 80
 
-            # Define the pitch
-            pitch = Pitch(pitch_type='statsbomb', pitch_color='black', line_color='#c7d5cc',
-                        half=False, pad_top=2, corner_arcs=True)
+            # # Define the pitch
+            # pitch = Pitch(pitch_type='statsbomb', pitch_color='black', line_color='#c7d5cc',
+            #             half=False, pad_top=2, corner_arcs=True)
 
-            fig,ax = pitch.draw(figsize=(6,8))
-            fig.set_facecolor('black')
+            # fig,ax = pitch.draw(figsize=(6,8))
+            # fig.set_facecolor('black')
 
-            gk_events = pd.read_parquet(f"{league}VideoGoalKickEvents.parquet")
+            # gk_events = pd.read_parquet(f"{league}VideoGoalKickEvents.parquet")
 
-            gk_events = gk_events[gk_events['match_id'].isin(selected_ids)]
+            # gk_events = gk_events[gk_events['match_id'].isin(selected_ids)]
 
-            for _, row in gk_events.iterrows():
-                x = row['gk_end_x']
-                y = row['gk_end_y']
-                pitch.scatter(x,y, ax = ax, color = 'white', s = 20)
+            # for _, row in gk_events.iterrows():
+            #     x = row['gk_end_x']
+            #     y = row['gk_end_y']
+            #     pitch.scatter(x,y, ax = ax, color = 'white', s = 20)
                 
               
-            ax.text(60, -5,'End Location of Short Goal Kick Buildouts', color = 'white', ha = 'center', fontsize = 12.5)
-            ax.text(60, -2,'Direction of Attack --->', color = 'white', ha = 'center', fontsize = 10)
+            # ax.text(60, -5,'End Location of Short Goal Kick Buildouts', color = 'white', ha = 'center', fontsize = 12.5)
+            # ax.text(60, -2,'Direction of Attack --->', color = 'white', ha = 'center', fontsize = 10)
 
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
-            buf.seek(0)
+            # buf = io.BytesIO()
+            # plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+            # buf.seek(0)
 
-            # Display the image
-            st.image(buf, use_column_width=True)
+            # # Display the image
+            # st.image(buf, use_column_width=True)
+            st.session_state.old_selected_points = st.session_state.selected_points
+            fig = create_pitch(480,320)
+            #fig = create_pitch(600,400)
+            
+            # Load Goal Kick Event Data
+            # Replace this with your parquet file, and make sure you have your dataframe loaded.
+            gk_events = pd.read_parquet(f"{league}VideoGoalKickEvents.parquet")
+
+            # Filter based on selected match ids
+            gk_events = gk_events[gk_events['match_id'].isin(selected_ids)]
+
+        
+            # Plot the goal kick events
+            fig.add_trace(go.Scatter(
+                x=gk_events['gk_end_x'],
+                y=gk_events['gk_end_y'],
+                mode='markers',
+                marker=dict(color='white', size=8),
+                name="Goal Kick End",
+                hoverinfo="text",
+                text=gk_events['title'].astype(str) + " -> " + gk_events['gk_end_player'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+            ))
+            
+            
 
 
- 
-    
- 
+            # Add title and direction of attack
+            fig.add_annotation(text="End Location of Short Goal Kick Buildouts", xref="paper", yref="paper",
+                            x=0.5, y=1.05, showarrow=False, font=dict(color="white", size=14), align="center")
+            fig.add_annotation(text="Direction of Attack --->", xref="paper", yref="paper",
+                            x=0.5, y=-0.05, showarrow=False, font=dict(color="white", size=12), align="center")
+
+            # Display in Streamlit
+            #st.plotly_chart(fig)
+            #overlay_container = st.empty()
+
+            show_mode = st.session_state.show_video
+            
+            
+            selected_points = True
+            selected_points = plotly_events(fig, click_event=True)
+            
+            # if st.session_state.show_video == False and selected_points:
+            
+            # if st.session_state.selected_points
+
+
+
+
+            
+
+            print(f"old: {st.session_state.old_selected_points}")
+            #if st.session_state.show_video and selected_points:
+            if st.session_state.old_selected_points != selected_points:
+            #if selected_points:
+                
+                #st.session_state.show_video = True
+                if len(selected_points) > 0:
+                    clicked_point = selected_points[0]  # If multiple points, handle accordingly
+                    clicked_index = clicked_point['pointIndex']
+                    clicked_event = gk_events.iloc[clicked_index]
+                
+                    filename = clicked_event['filename']
+                    start_time = clicked_event['start_time']
+                    file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
+                    # Extract video info (filename and start_time)
+                    video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={start_time}"
+                    if st.session_state.show_video or selected_points:
+                        st.markdown(f'''
+                        <div id="video-popup" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:999;">
+                            <div style="position:relative; width:60%; max-width:800px; height:60%; max-height:450px;">
+                                <iframe src="{video_url}" width="100%" height="100%" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                        ''', unsafe_allow_html=True)
+
+                        st.session_state.selected_points = selected_points
+
 
         #dual_progress_bars(60, "Progress 1", 85, "Progress 2")
 
-
-    
         col1, col2 = st.columns(2)
         with col1: 
             metric = st.selectbox(
@@ -1403,8 +1589,8 @@ if individual == 'Team' and len(selected_ids) > 0:
 
 
             #selection = st.selectbox('Choose Clip', clip_titles_t2, index=st.session_state.clip_index)
-            print("index", st.session_state.clip_index_t2)
-            print(len(clip_titles_t2))
+            # print("index", st.session_state.clip_index_t2)
+            # print(len(clip_titles_t2))
             selection = st.selectbox('Choose Clip', clip_titles_t2, index=st.session_state.clip_index_t2, key='clip_selector_t2')
             if selection != clip_titles_t2[st.session_state.clip_index_t2]:
                 st.session_state.clip_index_t2 = clip_titles_t2.index(selection)
@@ -1441,7 +1627,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         # overlap = 30  # 30 seconds overlap
 
         time_str = time_selection[3:8]
-        print(time_str)
+        #print(time_str)
         segment, time_within_segment = find_closest_segment_with_times(time_str)
  
 
@@ -1451,7 +1637,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         def display_video(match_selection, half_selection, segment):
             
             filename = f"{match_selection}-h{half_selection}-{segment}.mp4"
-            print(filename)
+            #(filename)
             file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
             # files = list_files_in_folder(FOLDER_ID)
             # file_id = get_file_id(filename, files)
@@ -1462,7 +1648,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={time_within_segment}"
 
 
-                print(f"{filename} -> Video URL: {video_url}")  # Debug print statement
+                #print(f"{filename} -> Video URL: {video_url}")  # Debug print statement
                 # Use an HTML video tag
                 #st.markdown(f'<video width="640" height="480" controls><source src="{video_url}" type="video/mp4">Your browser does not support the video tag.</video>', unsafe_allow_html=True)
                 st.markdown(f'<iframe src="{video_url}" width="704" height="528" frameborder="0" allow="autoplay"; encrypted-media" allowfullscreen></iframe>', unsafe_allow_html=True)
@@ -1485,7 +1671,88 @@ if individual == 'Team' and len(selected_ids) > 0:
         # with col2:
         st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t2 >= len(clip_titles_t2) - 1), key="next_clip_button_t2")
          
+        
 
+        # st.session_state.old_selected_points = st.session_state.selected_points
+        # fig = create_pitch()
+        # # Load Goal Kick Event Data
+        # # Replace this with your parquet file, and make sure you have your dataframe loaded.
+        # gk_events = pd.read_parquet(f"{league}VideoGoalKickEvents.parquet")
+
+        # # Filter based on selected match ids
+        # gk_events = gk_events[gk_events['match_id'].isin(selected_ids)]
+
+    
+        # # Plot the goal kick events
+        # fig.add_trace(go.Scatter(
+        #     x=gk_events['gk_end_x'],
+        #     y=gk_events['gk_end_y'],
+        #     mode='markers',
+        #     marker=dict(color='white', size=8),
+        #     name="Goal Kick End",
+        #     hoverinfo="text",
+        #     text=gk_events['title'].astype(str) + " -> " + gk_events['gk_end_player'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+        # ))
+        
+        
+
+
+        # # Add title and direction of attack
+        # fig.add_annotation(text="End Location of Short Goal Kick Buildouts", xref="paper", yref="paper",
+        #                 x=0.5, y=1.05, showarrow=False, font=dict(color="white", size=14), align="center")
+        # fig.add_annotation(text="Direction of Attack --->", xref="paper", yref="paper",
+        #                 x=0.5, y=-0.05, showarrow=False, font=dict(color="white", size=12), align="center")
+
+        # # Display in Streamlit
+        # #st.plotly_chart(fig)
+        # #overlay_container = st.empty()
+
+        # show_mode = st.session_state.show_video
+        
+        
+        # selected_points = True
+        # selected_points = plotly_events(fig, click_event=True)
+        
+        # # if st.session_state.show_video == False and selected_points:
+        
+        # # if st.session_state.selected_points
+
+
+
+
+        
+
+        # print(f"old: {st.session_state.old_selected_points}")
+        # #if st.session_state.show_video and selected_points:
+        # if st.session_state.old_selected_points != selected_points:
+        # #if selected_points:
+            
+        #     #st.session_state.show_video = True
+        #     if len(selected_points) > 0:
+        #         clicked_point = selected_points[0]  # If multiple points, handle accordingly
+        #         clicked_index = clicked_point['pointIndex']
+        #         clicked_event = gk_events.iloc[clicked_index]
+            
+        #         filename = clicked_event['filename']
+        #         start_time = clicked_event['start_time']
+        #         file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
+        #         # Extract video info (filename and start_time)
+        #         video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={start_time}"
+        #         if st.session_state.show_video or selected_points:
+        #             st.markdown(f'''
+        #             <div id="video-popup" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:999;">
+        #                 <div style="position:relative; width:60%; max-width:800px; height:60%; max-height:450px;">
+        #                     <iframe src="{video_url}" width="100%" height="100%" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        #                 </div>
+        #             </div>
+        #             ''', unsafe_allow_html=True)
+
+        #             st.session_state.selected_points = selected_points
+
+
+        
+            
+            
 
 if individual == 'Player':    
     tab1, tab2, tab3, tab4 = st.tabs(['Tackling', 'Heading', 'Progressive Passing','Changing Point of Attack'])
