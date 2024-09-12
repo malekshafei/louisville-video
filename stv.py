@@ -280,12 +280,31 @@ with st.sidebar:
                 'PPDA',
                 'Shots after Pressure Regains',
                 'Att. Half Regains',
+
                 '% of Goal Kicks Short',
                 'Passes per Sequence',
                 'Avg. Buildup Speed',
                 'Avg. Distance Reached',
                 '% -> Att. Half',
-                '% -> Att. Third']
+                '% -> Att. Third',
+
+                'Vertical Sequences',
+                '% of Passes Forward',
+                'Avg Sequence Speed',
+                'Box Entries from Vertical Sequences',
+                'xG from Vertical Sequences',
+                'Goals from Vertical Sequences',
+
+                'Switches',
+                'Switch Accuracy',
+                'Switches Leading to Shots',
+
+                'Crosses Completed',
+                'Cross Accuracy',
+                'Crosses Leading to Shots',
+                'Crosses Leading to Goals',
+                'Deep Crosses',
+                'Deep Crosses Leading to Shots']
     
     neg_cols = ['PPDA', 'Def Half Entries Allowed'] 
     
@@ -328,6 +347,19 @@ with st.sidebar:
     #team_rankings['pctShort GK Buildups'] = round(team_rankings['Short GK Buildups'].rank(pct=True) * 100,2)
     team_rankings['Buildout Score'] = round(team_rankings['Goal Kick Buildouts'],1)
 
+    team_rankings['Verticality'] = (0.4 * team_rankings['pctVertical Sequences']) + (0.15 * team_rankings['pctxG from Vertical Sequences']) + (0.1 * team_rankings['pctBox Entries from Vertical Sequences']) + (0.25 * team_rankings['pct% of Passes Forward']) + (0.1 * team_rankings['pctAvg Sequence Speed'])
+    team_rankings['Verticality Score'] = round(team_rankings['Verticality'],1)
+
+    team_rankings['Changing Point of Attack'] = (0.65 * team_rankings['pctSwitches']) + (0.1 * team_rankings['pctSwitch Accuracy']) + (0.25 * team_rankings['pctSwitches Leading to Shots'])
+    team_rankings['Switch Score'] = round(team_rankings['Changing Point of Attack'],1)
+
+    team_rankings['Crossing'] = (0.35 * team_rankings['pctCrosses Completed']) + (0.1 * team_rankings['pctCross Accuracy']) + (0.4 * team_rankings['pctCrosses Leading to Shots']) + (0.15 * team_rankings['pctCrosses Leading to Goals'])
+    team_rankings['Cross Score'] = round(team_rankings['Crossing'],1)
+
+
+
+
+
 
 
 
@@ -338,20 +370,23 @@ with st.sidebar:
         pct1 = team_rankings[team_rankings['Team'] == selected_team]['Pressing Rating'].values[0]
         
         pct2 = team_rankings[team_rankings['Team'] == selected_team]['Buildout Score'].values[0]
-        pct3 = 0
+        pct3 = team_rankings[team_rankings['Team'] == selected_team]['Verticality Score'].values[0]
         pct4 = 0 
         pct5 = 0
         custom_progress_bar(int(round(pct1,0)), "Pressing")
         custom_progress_bar(int(round(pct2,0)), "Goal Kick Buildouts")
-        custom_progress_bar(int(pct3), "Verticality")
+        custom_progress_bar(int(round(pct3,0)), "Verticality")
         custom_progress_bar(int(pct4), "Changing Point of Attack")
         custom_progress_bar(int(pct5), "Crossing")
 
    
 
 
-    if 'selected_points' not in st.session_state:
-        st.session_state.selected_points = False
+    if 'selected_points_t2' not in st.session_state:
+        st.session_state.selected_points_t2 = False
+
+    if 'selected_points_t3' not in st.session_state:
+        st.session_state.selected_points_t3 = False
 
     n1 = 0
     n2 = 0
@@ -1466,7 +1501,7 @@ if individual == 'Team' and len(selected_ids) > 0:
 
             # # Display the image
             # st.image(buf, use_column_width=True)
-            st.session_state.old_selected_points = st.session_state.selected_points
+            st.session_state.old_selected_points_t2 = st.session_state.selected_points_t2
             fig = create_pitch(480,320)
             #fig = create_pitch(600,400)
             
@@ -1505,26 +1540,26 @@ if individual == 'Team' and len(selected_ids) > 0:
             show_mode = st.session_state.show_video
             
             
-            selected_points = True
-            selected_points = plotly_events(fig, click_event=True)
+            selected_points_t2 = True
+            selected_points_t2 = plotly_events(fig, click_event=True)
             
-            # if st.session_state.show_video == False and selected_points:
+            # if st.session_state.show_video == False and selected_points_t2:
             
-            # if st.session_state.selected_points
+            # if st.session_state.selected_points_t2
 
 
 
 
             
 
-            print(f"old: {st.session_state.old_selected_points}")
-            #if st.session_state.show_video and selected_points:
-            if st.session_state.old_selected_points != selected_points:
-            #if selected_points:
+            print(f"old: {st.session_state.old_selected_points_t2}")
+            #if st.session_state.show_video and selected_points_t2:
+            if st.session_state.old_selected_points_t2 != selected_points_t2:
+            #if selected_points_t2:
                 
                 #st.session_state.show_video = True
-                if len(selected_points) > 0:
-                    clicked_point = selected_points[0]  # If multiple points, handle accordingly
+                if len(selected_points_t2) > 0:
+                    clicked_point = selected_points_t2[0]  # If multiple points, handle accordingly
                     clicked_index = clicked_point['pointIndex']
                     clicked_event = gk_events.iloc[clicked_index]
                 
@@ -1533,7 +1568,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                     file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
                     # Extract video info (filename and start_time)
                     video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={start_time}"
-                    if st.session_state.show_video or selected_points:
+                    if st.session_state.show_video or selected_points_t2:
                         st.markdown(f'''
                         <div id="video-popup" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:999;">
                             <div style="position:relative; width:60%; max-width:800px; height:60%; max-height:450px;">
@@ -1542,7 +1577,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                         </div>
                         ''', unsafe_allow_html=True)
 
-                        st.session_state.selected_points = selected_points
+                        st.session_state.selected_points_t2 = selected_points_t2
 
 
         #dual_progress_bars(60, "Progress 1", 85, "Progress 2")
@@ -1749,7 +1784,556 @@ if individual == 'Team' and len(selected_ids) > 0:
 
         #             st.session_state.selected_points = selected_points
 
+    
+    with tab3:
+        
+        pct1 = team_rankings[team_rankings['Team'] == selected_team]['pctVertical Sequences'].values[0]
+        pct2 = team_rankings[team_rankings['Team'] == selected_team]['pct% of Passes Forward'].values[0]
+        pct3 = team_rankings[team_rankings['Team'] == selected_team]['pctAvg Sequence Speed'].values[0]
+        pct4 = team_rankings[team_rankings['Team'] == selected_team]['pctBox Entries from Vertical Sequences'].values[0]
+        pct5 = team_rankings[team_rankings['Team'] == selected_team]['pctxG from Vertical Sequences'].values[0]
+        pct6 = team_rankings[team_rankings['Team'] == selected_team]['pctGoals from Vertical Sequences'].values[0]
 
+
+        
+       
+        col1, col2, col3 = st.columns(3)
+        with col1: custom_progress_bar(int(pct1), f"Vertical Sequences   ({round(team_rankings[team_rankings['Team'] == selected_team]['Vertical Sequences'].values[0],1)}%)")
+        with col2: custom_progress_bar(int(pct1), f"% of Passes Forward   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% of Passes Forward'].values[0],2) * 100)}%)")
+        with col3: custom_progress_bar(int(pct1), f"Avg. Seq. Speed   ({round(team_rankings[team_rankings['Team'] == selected_team]['Avg Sequence Speed'].values[0],1)} m/s)")
+        
+        with col1: custom_progress_bar(int(pct2), f"Box Entries from Vert.   ({round(team_rankings[team_rankings['Team'] == selected_team]['Box Entries from Vertical Sequences'].values[0],1)})")
+        with col2: custom_progress_bar(int(pct4), f"xG from Vert.   ({round(team_rankings[team_rankings['Team'] == selected_team]['xG from Vertical Sequences'].values[0],1)})")
+        with col3: custom_progress_bar(int(pct5), f"Goals from Vert.   ({round(team_rankings[team_rankings['Team'] == selected_team]['Goals from Vertical Sequences'].values[0],1)})")
+
+        
+        st.write("")
+        
+        selected_metrics = ['Avg. Distance Reached', 'Avg. Buildup Speed']
+        #df = pd.DataFrame(data) 
+        df = full_team_data.sort_values(by='match_id')
+
+        #metrics = orig_cols#[col for col in df.columns if col != 'Match']
+        metrics = ['Vertical Sequences',
+                   '% of Passes Forward',
+                    'Avg Sequence Speed',
+                    'Box Entries from Vertical Sequences',
+                    'xG from Vertical Sequences',
+                    'Goals from Vertical Sequences']
+        #print(metrics)
+        if 'selected_metrics_t3' not in st.session_state:
+            #st.session_state.selected_metrics = metrics[:2]  # Default to first two metrics
+            st.session_state.selected_metrics_t3 = ['Vertical Sequences', 'xG from Vertical Sequences']
+        
+
+        
+
+        # Function to update the chart based on selected metrics
+        def update_chart(selected_metrics):
+            fig = go.Figure()
+            colors = ['white', 'purple']
+
+            # Add traces for selected metrics
+            for i, metric in enumerate(selected_metrics):
+                fig.add_trace(go.Scatter(
+                    x=df['Match'], y=df[metric],
+                    mode='lines+markers',
+                    name=metric,
+                    yaxis='y' if i == 0 else 'y2',
+                    line = dict(color=colors[i]),
+                    showlegend=False
+                ))
+            title_colors = {
+                selected_metrics[0]: 'white',
+                selected_metrics[1] if len(selected_metrics) > 1 else None: 'purple'
+            }
+            
+            if len(selected_metrics) == 2:
+                #title = f"<b style='color:{title_colors[selected_metrics[0]]}'>{selected_metrics[0]}</b> vs <b style='color:{title_colors[selected_metrics[1]]}'>{selected_metrics[1]}</b>"
+                title = f"<b style='color:{title_colors[selected_metrics[0]]}'>{selected_metrics[0]}</b> <b style='color: white'>vs</b> <b style='color:{title_colors[selected_metrics[1]]}'>{selected_metrics[1]}</b>"
+            else:
+                title = f"<b style='color:{title_colors[selected_metrics[0]]}'>{selected_metrics[0]}</b>"
+           
+           
+              
+            layout = {
+                'title': {
+                    'text': title,
+                    'x': 0.5,  # Center the title horizontally
+                    'xanchor': 'center',  # Anchor the title to the center horizontally
+                    'yanchor': 'top',  # Anchor the title to the top vertically
+                    'font': {
+                        'size': 18,  # Adjust font size if needed
+                        'color': 'black'  # Adjust color if needed
+                    },
+                    'pad': {
+                        'b': 20  # Adjust this value to reduce/increase space below the title
+                    }
+                },
+                'xaxis': {
+                    'title': "Match",
+                    'tickangle': -40
+                    },
+                'yaxis': {'title': selected_metrics[0], 'side': "left"},
+                'legend': {
+                    'orientation': "h",
+                    'yanchor': "bottom",
+                    'y': 1.02,
+                    'xanchor': "center",
+                    'x': 0.5,
+                #   'itemclick': "toggleoff",
+                #    'itemdoubleclick': "toggle"
+                }
+            }
+
+            # Add second y-axis if two metrics are selected
+            if len(selected_metrics) == 2:
+                layout['yaxis2'] = {
+                    'title': selected_metrics[1], 
+                    'side': "right", 
+                    'overlaying': "y",
+                    'titlefont': {'color': 'purple'}
+                }
+            
+            if selected_metrics[0] in neg_cols:
+                layout['yaxis']['autorange'] = 'reversed'
+            if len(selected_metrics) == 2 and selected_metrics[1] in neg_cols:
+                layout['yaxis2']['autorange'] = 'reversed'
+
+            fig.update_layout(layout)
+
+            #print(st.session_state.selected_metrics_t2)
+
+            return fig
+
+        # Create columns for metrics selection
+        cols = st.columns(len(metrics))
+
+        for i, metric in enumerate(metrics):
+            with cols[i]:
+                if st.checkbox(metric, value=(metric in st.session_state.selected_metrics_t3)):
+                    if metric not in st.session_state.selected_metrics_t3:
+                        st.session_state.selected_metrics_t3.append(metric)
+                else:
+                    if metric in st.session_state.selected_metrics_t3:
+                        st.session_state.selected_metrics_t3.remove(metric)
+
+        # Enforce the restriction of selecting only 1 or 2 metrics
+        if len(st.session_state.selected_metrics_t3) < 1 or len(st.session_state.selected_metrics_t3) > 2:
+            st.error("Please select exactly 1 or 2 metrics.")
+        else:
+            # Create and display the plot
+            fig = update_chart(st.session_state.selected_metrics_t3)
+            st.plotly_chart(fig)
+
+
+
+
+
+
+
+
+        col1, col2 = st.columns([0.9, 2])#st.columns(2)
+        with col1:
+            if len(selected_ids) <= 5:
+                team_rankings2 = league_data.groupby('Team').agg(aggs).reset_index()
+                for col in orig_cols:
+                    team_rankings2[col] = round(team_rankings2[col],1)
+                for col in orig_cols:
+                    if col not in ['match_id', 'Opponent', 'Match Date', 'Team', 'Venue']:
+                        if col in neg_cols:
+                            team_rankings2[f"pct{col}"] = 100 - round(team_rankings2[col].rank(pct=True) * 100,2)
+
+                        else:
+                            team_rankings2[f"pct{col}"] = round(team_rankings2[col].rank(pct=True) * 100,2)
+
+                
+                                
+                
+                # team_rankings2['Pressing'] = ((0.2 * team_rankings2['pctPPDA']) + (0.25 * team_rankings2['pctAvg. Defensive Distance']) + (0.2 * team_rankings2['pctAtt. Third Pressures']) + (0.25 * team_rankings2['pctAtt. Half Regains']) + (0.1 * team_rankings2['pctShots after Pressure Regains']))
+                # #team_rankings['Pressing'] = round(team_rankings['Pressing'].rank(pct=True) * 100,2)
+                # team_rankings2['Pressing Rating'] = round(team_rankings2['Pressing'],1)
+
+                # team_rankings2['Goal Kick Buildouts'] = ((0.3 * team_rankings2['pctAvg. Distance Reached']) + (0.15 * team_rankings2['pctAvg. Buildup Speed']) + (0.4 * team_rankings2['pct% -> Att. Half']) + (0.15 * team_rankings2['pctPasses per Sequence']))
+                # #team_rankings['pctShort GK Buildups'] = round(team_rankings['Short GK Buildups'].rank(pct=True) * 100,2)
+                # team_rankings2['Buildout Score'] = round(team_rankings2['Goal Kick Buildouts'],1)
+
+                team_rankings2['Verticality'] = (0.4 * team_rankings2['pctVertical Sequences']) + (0.15 * team_rankings2['pctxG from Vertical Sequences']) + (0.1 * team_rankings2['pctBox Entries from Vertical Sequences']) + (0.25 * team_rankings2['pct% of Passes Forward']) + (0.1 * team_rankings2['pctAvg Sequence Speed'])
+                team_rankings2['Verticality Score'] = round(team_rankings2['Verticality'],1)
+
+
+
+
+                team_rankings2 = team_rankings2[team_rankings2['Team'] != selected_team]
+                team_rankings = team_rankings[team_rankings['Team'] == selected_team]
+                
+                team_rankings = pd.concat([team_rankings, team_rankings2], ignore_index=True)
+
+                #print(team_rankings[team_rankings['Team'] == selected_team]['Pressing Rating'].values[0])
+
+                
+                            
+
+
+            for col in orig_cols:
+                team_rankings[col] = round(team_rankings[col],2)
+                shortened_vert_data = team_rankings.sort_values(by = 'Verticality Score', ascending=False)
+                #shortened_gk_data = shortened_gk_data[['Team','Matches', 'Buildout Score', '% of Goal Kicks Short', 'Passes per Sequence', 'Avg. Buildup Speed', 'Avg. Distance Reached','% -> Att. Half', '% -> Att. Third']]
+                shortened_vert_data = shortened_vert_data[['Team','Verticality Score','Matches',  'Vertical Sequences', '% of Passes Forward', 'Avg Sequence Speed', 'Box Entries from Vertical Sequences','xG from Vertical Sequences', 'Goals from Vertical Sequences']]
+                #st.write(shortened_pressing_data)
+
+            shortened_vert_data['Team'] = shortened_vert_data['Team'].replace({
+                'Charleston Battery': 'Charleston',
+                'New Mexico United': 'New Mexico',
+                'Tampa Bay Rowdies': 'Tampa Bay',
+                'Oakland Roots SC': 'Oakland',
+                'Memphis 901': 'Memphis',
+                'Sacramento Republic': 'Sacramento',
+                'Colorado Springs': 'Colorado',
+                'Detroit City': 'Detroit',
+                'Las Vegas Lights': 'Las Vegas',
+                'Indy Eleven': 'Indy',
+                'Birmingham Legion': 'Birmingham',
+                'Loudoun United': 'Loudoun',
+                'Pittsburgh Riverhounds': 'Pitt',
+                'Phoenix Rising': 'Phoenix',
+                'Hartford Athletic': 'Hartford',
+                'Monterey Bay': 'Monterey',
+                'Orange County SC': 'Orange County',
+                'El Paso Locomotive': 'El Paso'
+                
+            })
+            shortened_vert_data.set_index('Team', inplace=True)
+
+            #st.dataframe(shortened_pressing_data, use_container_width=True, height = 280)
+            st.dataframe(shortened_vert_data, height = 280)
+
+            
+        with col2:
+            
+            # import matplotlib.pyplot as plt
+            # import numpy as np
+            # import pandas as pd
+            # from mplsoccer.pitch import Pitch
+            # import io
+            # import streamlit as st
+
+            # # Define pitch dimensions for a 'statsbomb' pitch
+            # pitch_length = 120
+            # pitch_width = 80
+
+            # # Define the pitch
+            # pitch = Pitch(pitch_type='statsbomb', pitch_color='black', line_color='#c7d5cc',
+            #             half=False, pad_top=2, corner_arcs=True)
+
+            # fig,ax = pitch.draw(figsize=(6,8))
+            # fig.set_facecolor('black')
+
+            # gk_events = pd.read_parquet(f"{league}VideoGoalKickEvents.parquet")
+
+            # gk_events = gk_events[gk_events['match_id'].isin(selected_ids)]
+
+            # for _, row in gk_events.iterrows():
+            #     x = row['gk_end_x']
+            #     y = row['gk_end_y']
+            #     pitch.scatter(x,y, ax = ax, color = 'white', s = 20)
+                
+              
+            # ax.text(60, -5,'End Location of Short Goal Kick Buildouts', color = 'white', ha = 'center', fontsize = 12.5)
+            # ax.text(60, -2,'Direction of Attack --->', color = 'white', ha = 'center', fontsize = 10)
+
+            # buf = io.BytesIO()
+            # plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+            # buf.seek(0)
+
+            # # Display the image
+            # st.image(buf, use_column_width=True)
+            st.session_state.old_selected_points_t3 = st.session_state.selected_points_t3
+            fig = create_pitch(480,320)
+            #fig = create_pitch(600,400)
+            
+            # Load Goal Kick Event Data
+            # Replace this with your parquet file, and make sure you have your dataframe loaded.
+            vert_events = pd.read_parquet(f"{league}VideoVerticalityEvents.parquet")
+
+            # Filter based on selected match ids
+            vert_events = vert_events[vert_events['match_id'].isin(selected_ids)] 
+
+        
+            # Plot the goal kick events
+            fig.add_trace(go.Scatter(
+                x= vert_events['vert_end_x'],
+                y= vert_events['vert_end_y'],
+                
+                mode='markers',
+                marker=dict(color='white', size=8),
+                name="Verticality End",
+                hoverinfo="text",
+                text=vert_events['title'].astype(str) + " -> " + vert_events['vert_end_player'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+            ))
+            
+            
+
+
+            # Add title and direction of attack
+            fig.add_annotation(text="End Location of Vertical Sequences", xref="paper", yref="paper",
+                            x=0.5, y=1.05, showarrow=False, font=dict(color="white", size=14), align="center")
+            fig.add_annotation(text="Direction of Attack --->", xref="paper", yref="paper",
+                            x=0.5, y=-0.05, showarrow=False, font=dict(color="white", size=12), align="center")
+
+            # Display in Streamlit
+            #st.plotly_chart(fig)
+            #overlay_container = st.empty()
+
+            show_mode = st.session_state.show_video
+            
+            
+            selected_points_t3 = True
+            selected_points_t3 = plotly_events(fig, click_event=True)
+            
+            # if st.session_state.show_video == False and selected_points_t3:
+            
+            # if st.session_state.selected_points_t3
+
+
+
+
+            
+
+            print(f"old: {st.session_state.old_selected_points_t3}")
+            #if st.session_state.show_video and selected_points_t3:
+            if st.session_state.old_selected_points_t3 != selected_points_t3:
+            #if selected_points_t3:
+                
+                #st.session_state.show_video = True
+                if len(selected_points_t3) > 0:
+                    clicked_point = selected_points_t3[0]  # If multiple points, handle accordingly
+                    clicked_index = clicked_point['pointIndex']
+                    clicked_event = vert_events.iloc[clicked_index]
+                
+                    filename = clicked_event['filename']
+                    start_time = clicked_event['start_time']
+                    file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
+                    # Extract video info (filename and start_time)
+                    video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={start_time}"
+                    if st.session_state.show_video or selected_points_t3:
+                        st.markdown(f'''
+                        <div id="video-popup" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:999;">
+                            <div style="position:relative; width:60%; max-width:800px; height:60%; max-height:450px;">
+                                <iframe src="{video_url}" width="100%" height="100%" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                        ''', unsafe_allow_html=True)
+
+                        st.session_state.selected_points_t3 = selected_points_t3
+
+
+        #dual_progress_bars(60, "Progress 1", 85, "Progress 2")
+
+        col1, col2 = st.columns(2)
+        with col1: 
+            metric = st.selectbox(
+            'Select Metric',
+            ['Vertical Sequences', 'Final Quarter Entries', 'Box Entries', 'Shots', 'Goals']
+            )
+        
+        if metric == 'Vertical Sequences': data = pd.read_parquet(f"{league}VideoVerticalityEvents.parquet")
+        elif metric == 'Final Quarter Entries': data = pd.read_parquet("vert_final_quarter_entries_video_events.parquet")
+        elif metric == 'Box Entries': data = pd.read_parquet("vert_box_entries_video_events.parquet")
+        elif metric == 'Shots': data = pd.read_parquet("vert_shots_video_events.parquet")
+        elif metric == 'Goals': data = pd.read_parquet("vert_goals_video_events.parquet")
+        data = data.drop_duplicates(subset = ['match_id', 'period']).reset_index()
+
+        data = data[data['match_id'].isin(selected_ids)].reset_index()
+        if len(data) == 0: 
+            st.error("No events in selected matches")
+        
+        # with col2:
+        #     sort_method = st.selectbox(
+        #         'Sort By',
+        #         ['Most Recent']
+        #     )
+        
+        if 'clip_index_t3' not in st.session_state:
+            st.session_state.clip_index_t3 = 0
+        def update_index(step):
+            new_index = st.session_state.clip_index_t3 + step
+            if 0 <= new_index < len(clip_titles_t3):
+                st.session_state.clip_index_t3 = new_index
+                st.session_state.clip_selector_t3 = clip_titles_t3[new_index]
+
+        sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
+        clip_titles_t3 = sorted_data['title'].tolist()
+
+        
+        with col2:
+            #selection = st.selectbox('Choose Clip', data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False,True,True])['title'])
+            # sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
+            # clip_titles_t2 = sorted_data['title'].tolist()
+
+
+            #selection = st.selectbox('Choose Clip', clip_titles_t2, index=st.session_state.clip_index)
+            # print("index", st.session_state.clip_index_t2)
+            # print(len(clip_titles_t2))
+            selection = st.selectbox('Choose Clip', clip_titles_t3, index=st.session_state.clip_index_t3, key='clip_selector_t3')
+            if selection != clip_titles_t3[st.session_state.clip_index_t3]:
+                st.session_state.clip_index_t3 = clip_titles_t3.index(selection)
+
+            
+ 
+
+
+        match_selection = data.loc[data['title'] == selection]['match_id'].values[0]
+        half_selection = data.loc[data['title'] == selection]['period'].values[0]
+        time_selection = data.loc[data['title'] == selection]['timestamp'].values[0]
+
+
+        def find_closest_segment_with_times(time_str, segment_length = 60, overlap = 30):
+            # Convert time_str to seconds
+            minutes, seconds = map(int, time_str.split(':'))
+            time_in_seconds = (minutes * 60 + seconds) - 5 #5 seconds before clip
+
+            # Calculate segment details
+            step = segment_length - overlap
+            segment_number = time_in_seconds // step + 1
+            
+            # Calculate the start time of the segment
+            start_time = (segment_number - 1) * step
+            end_time = start_time + segment_length
+            
+            # Calculate time within segment
+            time_within_segment = time_in_seconds - start_time
+            
+            return segment_number, time_within_segment
+
+        # # Example usage
+        # segment_length = 60  # 1 minute segments
+        # overlap = 30  # 30 seconds overlap
+
+        time_str = time_selection[3:8]
+        #print(time_str)
+        segment, time_within_segment = find_closest_segment_with_times(time_str)
+ 
+
+        csv_file_path = 'drive_files.csv'
+        files_df = pd.read_csv(csv_file_path)
+
+        def display_video(match_selection, half_selection, segment):
+            
+            filename = f"{match_selection}-h{half_selection}-{segment}.mp4"
+            #(filename)
+            file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
+            # files = list_files_in_folder(FOLDER_ID)
+            # file_id = get_file_id(filename, files)
+            
+            if file_id:
+                #video_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+                #video_url = f"https://drive.google.com/file/d/{file_id}/view"
+                video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={time_within_segment}"
+
+
+                #print(f"{filename} -> Video URL: {video_url}")  # Debug print statement
+                # Use an HTML video tag
+                #st.markdown(f'<video width="640" height="480" controls><source src="{video_url}" type="video/mp4">Your browser does not support the video tag.</video>', unsafe_allow_html=True)
+                st.markdown(f'<iframe src="{video_url}" width="704" height="528" frameborder="0" allow="autoplay"; encrypted-media" allowfullscreen></iframe>', unsafe_allow_html=True)
+                
+
+                
+                #st.video(video_url)
+                #
+            else:
+                st.error(f"Video '{filename}' not found in the folder.")
+
+
+        display_video(match_selection, half_selection, segment)
+        
+        # col1, col2 = st.columns(2)
+
+        # with col1:
+        st.button("Previous Clip", on_click=update_index, args=(-1,), disabled=(st.session_state.clip_index_t3 <= 0), key="prev_clip_button_t3")
+
+        # with col2:
+        st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t3 >= len(clip_titles_t3) - 1), key="next_clip_button_t3")
+         
+        
+
+        # st.session_state.old_selected_points = st.session_state.selected_points
+        # fig = create_pitch()
+        # # Load Goal Kick Event Data
+        # # Replace this with your parquet file, and make sure you have your dataframe loaded.
+        # gk_events = pd.read_parquet(f"{league}VideoGoalKickEvents.parquet")
+
+        # # Filter based on selected match ids
+        # gk_events = gk_events[gk_events['match_id'].isin(selected_ids)]
+
+    
+        # # Plot the goal kick events
+        # fig.add_trace(go.Scatter(
+        #     x=gk_events['gk_end_x'],
+        #     y=gk_events['gk_end_y'],
+        #     mode='markers',
+        #     marker=dict(color='white', size=8),
+        #     name="Goal Kick End",
+        #     hoverinfo="text",
+        #     text=gk_events['title'].astype(str) + " -> " + gk_events['gk_end_player'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+        # ))
+        
+        
+
+
+        # # Add title and direction of attack
+        # fig.add_annotation(text="End Location of Short Goal Kick Buildouts", xref="paper", yref="paper",
+        #                 x=0.5, y=1.05, showarrow=False, font=dict(color="white", size=14), align="center")
+        # fig.add_annotation(text="Direction of Attack --->", xref="paper", yref="paper",
+        #                 x=0.5, y=-0.05, showarrow=False, font=dict(color="white", size=12), align="center")
+
+        # # Display in Streamlit
+        # #st.plotly_chart(fig)
+        # #overlay_container = st.empty()
+
+        # show_mode = st.session_state.show_video
+        
+        
+        # selected_points = True
+        # selected_points = plotly_events(fig, click_event=True)
+        
+        # # if st.session_state.show_video == False and selected_points:
+        
+        # # if st.session_state.selected_points
+
+
+
+
+        
+
+        # print(f"old: {st.session_state.old_selected_points}")
+        # #if st.session_state.show_video and selected_points:
+        # if st.session_state.old_selected_points != selected_points:
+        # #if selected_points:
+            
+        #     #st.session_state.show_video = True
+        #     if len(selected_points) > 0:
+        #         clicked_point = selected_points[0]  # If multiple points, handle accordingly
+        #         clicked_index = clicked_point['pointIndex']
+        #         clicked_event = gk_events.iloc[clicked_index]
+            
+        #         filename = clicked_event['filename']
+        #         start_time = clicked_event['start_time']
+        #         file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
+        #         # Extract video info (filename and start_time)
+        #         video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={start_time}"
+        #         if st.session_state.show_video or selected_points:
+        #             st.markdown(f'''
+        #             <div id="video-popup" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:999;">
+        #                 <div style="position:relative; width:60%; max-width:800px; height:60%; max-height:450px;">
+        #                     <iframe src="{video_url}" width="100%" height="100%" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        #                 </div>
+        #             </div>
+        #             ''', unsafe_allow_html=True)
+
+        #             st.session_state.selected_points = selected_points
+
+    
         
             
             
