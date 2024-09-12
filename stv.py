@@ -372,7 +372,7 @@ with st.sidebar:
         pct2 = team_rankings[team_rankings['Team'] == selected_team]['Buildout Score'].values[0]
         pct3 = team_rankings[team_rankings['Team'] == selected_team]['Verticality Score'].values[0]
         pct4 = team_rankings[team_rankings['Team'] == selected_team]['Switch Score'].values[0] 
-        pct5 = 0
+        pct5 = team_rankings[team_rankings['Team'] == selected_team]['Cross Score'].values[0] 
         custom_progress_bar(int(round(pct1,0)), "Pressing")
         custom_progress_bar(int(round(pct2,0)), "Goal Kick Buildouts")
         custom_progress_bar(int(round(pct3,0)), "Verticality")
