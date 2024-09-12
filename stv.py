@@ -3148,7 +3148,8 @@ if individual == 'Team' and len(selected_ids) > 0:
             
             # Load Goal Kick Event Data
             # Replace this with your parquet file, and make sure you have your dataframe loaded.
-            cross_events = pd.read_parquet(f"{league}VideoCrossEvents.parquet")
+            #cross_events = pd.read_parquet(f"{league}VideoCrossEvents.parquet")
+            cross_events = pd.read_parquet(f"crosses_to_shots_video_events.parquet")
 
             # Filter based on selected match ids
             cross_events = cross_events[cross_events['match_id'].isin(selected_ids)] 
@@ -3170,10 +3171,10 @@ if individual == 'Team' and len(selected_ids) > 0:
 
 
             # Add title and direction of attack
-            fig.add_annotation(text="Start Location of Crosses", xref="paper", yref="paper",
+            fig.add_annotation(text="Crosses Leading to Shots", xref="paper", yref="paper",
                             x=0.5, y=1.05, showarrow=False, font=dict(color="white", size=14), align="center")
-            fig.add_annotation(text="Direction of Attack --->", xref="paper", yref="paper",
-                            x=0.5, y=-0.05, showarrow=False, font=dict(color="white", size=12), align="center")
+            # fig.add_annotation(text="Direction of Attack --->", xref="paper", yref="paper",
+            #                 x=0.5, y=-0.05, showarrow=False, font=dict(color="white", size=12), align="center")
 
             # Display in Streamlit
             #st.plotly_chart(fig)
