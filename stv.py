@@ -104,11 +104,11 @@ if 'show_video' not in st.session_state:
 
 
 
-st.logo("https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Louisville_City_FC_2020_logo_primary.svg/160px-Louisville_City_FC_2020_logo_primary.svg.png")
+# st.logo("https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Louisville_City_FC_2020_logo_primary.svg/160px-Louisville_City_FC_2020_logo_primary.svg.png")
 
 selected_team = 'Louisville City'
 league = 'USL'
-matches = [
+men_matches = [
     '3/16 @ El Paso',
     '3/23 vs Pittsburgh',
     '3/30 vs Birmingham',
@@ -137,10 +137,35 @@ matches = [
     '9/6 vs Loudoun'
            ]
 
-match_ids = [3930232, 3930247, 3930255, 3930266, 3930274, 3930288, 3930307,
+men_match_ids = [3930232, 3930247, 3930255, 3930266, 3930274, 3930288, 3930307,
             3930327, 3930340, 3930351, 3930354, 3930357, 3930369, 3930382,
             3930392, 3930399, 3930412, 3930424, 3930444, 3930456, 3930475,
             3930487, 3930499, 3930506, 3930524, 3930527]
+
+women_matches = [
+    '3/16 vs Orlando',
+    '3/23 @ Houston',
+    '3/30 @ Portland',
+    '4/13 vs San Diego',
+    '4/20 vs Utah',
+    '4/28 @ Gotham',
+    '5/5 @ Orlando',
+    '5/10 vs Washington',
+    '5/18 vs Kansas City',
+    '5/25 @ Chicago',
+    '6/7 vs Houston',
+    '6/15 vs Gotham',
+    '6/19 @ Angel City',
+    '6/23 @ Seattle',
+    '6/29 vs Bay',
+    '6/7 @ North Carolina',
+    '8/24 vs Chicago',
+    '8/31 vs Seattle',
+    '9/7 @ Bay'
+]
+women_match_ids = [3931339, 3931349, 3931357, 3931362, 3931368, 3931379,
+                    3931388, 3931393, 3931403, 3931413, 3931414, 3931422, 3931429, 3931435,
+                    3931439, 3931449, 3931455, 3931460, 3931467]
 
 
 
@@ -234,6 +259,22 @@ player_list = ['Arturo Ordoñez', 'Sean Totsch', 'Kyle Adams', 'Wesley Charpie']
 
 
 with st.sidebar:
+    selected_team = st.radio('Select Team', ['LouCity', 'Racing'])
+    if selected_team == 'LouCity':
+        selected_team = 'Louisville City'
+        matches = men_matches
+        match_ids = men_match_ids
+        st.logo("https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Louisville_City_FC_2020_logo_primary.svg/160px-Louisville_City_FC_2020_logo_primary.svg.png")
+        league = 'USL'
+
+    if selected_team == 'Racing':
+        selected_team = 'Racing Louisville FC'
+        matches = women_matches
+        match_ids = women_match_ids
+        st.logo("https://upload.wikimedia.org/wikipedia/en/thumb/3/37/Racing_Louisville_FC_logo.svg/1024px-Racing_Louisville_FC_logo.svg.png")
+        league = 'NWSL'
+
+
     #team = st.selectbox('Select Team', ['Louisville City'])
     #individual = st.radio('Team or Player Analyis?', ['Team', 'Player'])
     individual = st.radio('Team or Player Analyis?', ['Team'])
@@ -367,6 +408,7 @@ with st.sidebar:
 
     #print(selected_ids)
     if individual == 'Team' and len(selected_ids) > 0:
+        print(team_rankings['Team'].unique())
         pct1 = team_rankings[team_rankings['Team'] == selected_team]['Pressing Rating'].values[0]
         
         pct2 = team_rankings[team_rankings['Team'] == selected_team]['Buildout Score'].values[0]
@@ -430,8 +472,9 @@ with st.sidebar:
 if individual == 'Team' and len(selected_ids) > 0:    
     tab1, tab2, tab3, tab4, tab5 = st.tabs(['Pressing', 'Goal Kick Buildouts', 'Verticality','Changing Point of Attack', 'Crossing'])
 
-    if 'active_tab' not in st.session_state:
-        st.session_state.active_tab = "Verticality"
+    # if 'active_tab' not in st.session_state:
+    #     st.session_state.active_tab = "Verticality"
+
     ## Pressing
     with tab1:
         pct1 = team_rankings[team_rankings['Team'] == selected_team]['pctAtt. Third Pressures'].values[0]
@@ -833,7 +876,7 @@ if individual == 'Team' and len(selected_ids) > 0:
 
             from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
-            mins = pd.read_parquet(f"TeamMinutesPerGame.parquet")
+            mins = pd.read_parquet(f"{league}TeamMinutesPerGame.parquet")
             def short_names(x):
                 if x == 'Ray Serrano Lopez': return 'R. Serrano'
                 elif x == 'Jorge Gonzalez Asensi': return 'J. Gonzalez'
@@ -1117,9 +1160,9 @@ if individual == 'Team' and len(selected_ids) > 0:
             ['Attacking Half Regains', 'Box Entries after Regains', 'Shots after Press Regains']
             )
         
-        if metric == 'Attacking Half Regains': data = pd.read_parquet("att_half_regains_video_events.parquet")
-        elif metric == 'Box Entries after Regains': data = pd.read_parquet("regains_to_box_entry_video_events.parquet")
-        elif metric == 'Shots after Press Regains': data = pd.read_parquet("press_to_shot_video_events.parquet")
+        if metric == 'Attacking Half Regains': data = pd.read_parquet(f"{league}att_half_regains_video_events.parquet")
+        elif metric == 'Box Entries after Regains': data = pd.read_parquet(f"{league}regains_to_box_entry_video_events.parquet")
+        elif metric == 'Shots after Press Regains': data = pd.read_parquet(f"{league}press_to_shot_video_events.parquet")
         data = data.drop_duplicates(subset = ['match_id', 'period', 'minute']).reset_index()
 
         data = data[data['match_id'].isin(selected_ids)].reset_index()
@@ -1134,7 +1177,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         
         if 'clip_index_t1' not in st.session_state:
             st.session_state.clip_index_t1 = 0
-        def update_index(step):
+        def update_index_t1(step):
             new_index = st.session_state.clip_index_t1 + step
             if 0 <= new_index < len(clip_titles_t1):
                 st.session_state.clip_index_t1 = new_index
@@ -1147,14 +1190,14 @@ if individual == 'Team' and len(selected_ids) > 0:
 
                 st.session_state.clip_selector_t1 = clip_titles_t1[new_index]
 
-        sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
-        clip_titles_t1 = sorted_data['title'].tolist()
+        sorted_data_t1 = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
+        clip_titles_t1 = sorted_data_t1['title'].tolist()
 
         
         with col2:
             #selection = st.selectbox('Choose Clip', data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False,True,True])['title'])
-            # sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
-            # clip_titles_t1 = sorted_data['title'].tolist()
+            # sorted_data_t1 = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
+            # clip_titles_t1 = sorted_data_t1['title'].tolist()
 
 
             #selection = st.selectbox('Choose Clip', clip_titles_t1, index=st.session_state.clip_index)
@@ -1235,10 +1278,10 @@ if individual == 'Team' and len(selected_ids) > 0:
         # col1, col2 = st.columns(2)
 
         # with col1:
-        st.button("Previous Clip", on_click=update_index, args=(-1,), disabled=(st.session_state.clip_index_t1 <= 0), key="prev_clip_button_t1")
+        st.button("Previous Clip", on_click=update_index_t1, args=(-1,), disabled=(st.session_state.clip_index_t1 <= 0), key="prev_clip_button_t1")
 
         # with col2:
-        st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t1 >= len(clip_titles_t1) - 1), key="next_clip_button_t1")
+        st.button("Next Clip", on_click=update_index_t1, args=(1,), disabled=(st.session_state.clip_index_t1 >= len(clip_titles_t1) - 1), key="next_clip_button_t1")
 
         # # Force rerun if the index has changed
         # if st.session_state.clip_index != clip_titles_t1.index(selection):
@@ -1261,12 +1304,12 @@ if individual == 'Team' and len(selected_ids) > 0:
        
         col1, col2, col3 = st.columns(3)
         with col1: custom_progress_bar(int(pct1), f"% of Goal Kicks Short   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% of Goal Kicks Short'].values[0],1))}%)")
-        with col2: custom_progress_bar(int(pct1), f"Passes per Sequence   ({round(team_rankings[team_rankings['Team'] == selected_team]['Passes per Sequence'].values[0],1)})")
-        with col3: custom_progress_bar(int(pct1), f"Avg. Buildup Speed   ({round(team_rankings[team_rankings['Team'] == selected_team]['Avg. Buildup Speed'].values[0],1)} m/s)")
+        with col2: custom_progress_bar(int(pct2), f"Passes per Sequence   ({round(team_rankings[team_rankings['Team'] == selected_team]['Passes per Sequence'].values[0],1)})")
+        with col3: custom_progress_bar(int(pct3), f"Avg. Buildup Speed   ({round(team_rankings[team_rankings['Team'] == selected_team]['Avg. Buildup Speed'].values[0],1)} m/s)")
         
-        with col1: custom_progress_bar(int(pct2), f"Avg. Distance Reached   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Avg. Distance Reached'].values[0],1))}m)")
-        with col2: custom_progress_bar(int(pct4), f"% -> Att. Half   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% -> Att. Half'].values[0],1))}%)")
-        with col3: custom_progress_bar(int(pct5), f"% -> Att. Third   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% -> Att. Third'].values[0],1))}%)")
+        with col1: custom_progress_bar(int(pct4), f"Avg. Distance Reached   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Avg. Distance Reached'].values[0],1))}m)")
+        with col2: custom_progress_bar(int(pct5), f"% -> Att. Half   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% -> Att. Half'].values[0],1))}%)")
+        with col3: custom_progress_bar(int(pct6), f"% -> Att. Third   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% -> Att. Third'].values[0],1))}%)")
 
         
         st.write("")
@@ -1509,7 +1552,7 @@ if individual == 'Team' and len(selected_ids) > 0:
             # st.image(buf, use_column_width=True)
             st.session_state.old_selected_points_t2 = st.session_state.selected_points_t2
             fig = create_pitch(480,320)
-            #fig = create_pitch(600,400)
+            #fig = create_pitch(600,400) 
             
             # Load Goal Kick Event Data
             # Replace this with your parquet file, and make sure you have your dataframe loaded.
@@ -1518,17 +1561,29 @@ if individual == 'Team' and len(selected_ids) > 0:
             # Filter based on selected match ids
             gk_events = gk_events[gk_events['match_id'].isin(selected_ids)]
 
+            customdata = gk_events['title']
+
         
             # Plot the goal kick events
             fig.add_trace(go.Scatter(
                 x=gk_events['gk_end_x'],
                 y=gk_events['gk_end_y'],
                 mode='markers',
-                marker=dict(color='white', size=8),
-                name="Goal Kick End",
+                marker=dict(color='purple', size=5),
+                name="Switch End",
                 hoverinfo="text",
-                text=gk_events['title'].astype(str) + " -> " + gk_events['gk_end_player'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+                #text=switch_events['title'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+                hovertemplate="<b>%{customdata}</b><extra></extra>",
+                customdata=customdata,
+                hoverlabel=dict(bgcolor="white", font_size=12, font_family="Arial"),
             ))
+
+            fig.update_layout(
+                hoverdistance=10,  # Increase hover area
+                hovermode="closest",
+                showlegend=False
+            )
+
             
             
 
@@ -1595,10 +1650,10 @@ if individual == 'Team' and len(selected_ids) > 0:
             ['Short Goal Kick Buildouts', 'Own Half Turnovers', 'To Final Third', 'Long Goal Kicks']
             )
         
-        if metric == 'Short Goal Kick Buildouts': data = pd.read_parquet("gk_short_buildups_video_events.parquet")
-        elif metric == 'Own Half Turnovers': data = pd.read_parquet("gk_short_buildups_h1_turnover_video_events.parquet")
-        elif metric == 'To Final Third': data = pd.read_parquet("gk_short_buildups_to_final_third_video_events.parquet")
-        elif metric == 'Long Goal Kicks': data = pd.read_parquet("gk_long_buildups_video_events.parquet")
+        if metric == 'Short Goal Kick Buildouts': data = pd.read_parquet(f"{league}gk_short_buildups_video_events.parquet")
+        elif metric == 'Own Half Turnovers': data = pd.read_parquet(f"{league}gk_short_buildups_h1_turnover_video_events.parquet")
+        elif metric == 'To Final Third': data = pd.read_parquet(f"{league}gk_short_buildups_to_final_third_video_events.parquet")
+        elif metric == 'Long Goal Kicks': data = pd.read_parquet(f"{league}gk_long_buildups_video_events.parquet")
         data = data.drop_duplicates(subset = ['match_id', 'period', 'minute']).reset_index()
 
         data = data[data['match_id'].isin(selected_ids)].reset_index()
@@ -1613,14 +1668,14 @@ if individual == 'Team' and len(selected_ids) > 0:
         
         if 'clip_index_t2' not in st.session_state:
             st.session_state.clip_index_t2 = 0
-        def update_index(step):
+        def update_index_t2(step):
             new_index = st.session_state.clip_index_t2 + step
             if 0 <= new_index < len(clip_titles_t2):
                 st.session_state.clip_index_t2 = new_index
                 st.session_state.clip_selector_t2 = clip_titles_t2[new_index]
 
-        sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
-        clip_titles_t2 = sorted_data['title'].tolist()
+        sorted_data_t2 = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
+        clip_titles_t2 = sorted_data_t2['title'].tolist()
 
         
         with col2:
@@ -1633,85 +1688,90 @@ if individual == 'Team' and len(selected_ids) > 0:
             # print("index", st.session_state.clip_index_t2)
             # print(len(clip_titles_t2))
             selection = st.selectbox('Choose Clip', clip_titles_t2, index=st.session_state.clip_index_t2, key='clip_selector_t2')
-            if selection != clip_titles_t2[st.session_state.clip_index_t2]:
-                st.session_state.clip_index_t2 = clip_titles_t2.index(selection)
+            print("")
+            print(len(clip_titles_t2))
+            print(st.session_state.clip_index_t2)
+            print("")
+            if len(clip_titles_t2) > 0:
+                if selection != clip_titles_t2[st.session_state.clip_index_t2]:
+                    st.session_state.clip_index_t2 = clip_titles_t2.index(selection)
 
             
  
 
-
-        match_selection = data.loc[data['title'] == selection]['match_id'].values[0]
-        half_selection = data.loc[data['title'] == selection]['period'].values[0]
-        time_selection = data.loc[data['title'] == selection]['timestamp'].values[0]
-
-
-        def find_closest_segment_with_times(time_str, segment_length = 60, overlap = 30):
-            # Convert time_str to seconds
-            minutes, seconds = map(int, time_str.split(':'))
-            time_in_seconds = (minutes * 60 + seconds) - 5 #5 seconds before clip
-
-            # Calculate segment details
-            step = segment_length - overlap
-            segment_number = time_in_seconds // step + 1
-            
-            # Calculate the start time of the segment
-            start_time = (segment_number - 1) * step
-            end_time = start_time + segment_length
-            
-            # Calculate time within segment
-            time_within_segment = time_in_seconds - start_time
-            
-            return segment_number, time_within_segment
-
-        # # Example usage
-        # segment_length = 60  # 1 minute segments
-        # overlap = 30  # 30 seconds overlap
-
-        time_str = time_selection[3:8]
-        #print(time_str)
-        segment, time_within_segment = find_closest_segment_with_times(time_str)
- 
-
-        csv_file_path = 'drive_files.csv'
-        files_df = pd.read_csv(csv_file_path)
-
-        def display_video(match_selection, half_selection, segment):
-            
-            filename = f"{match_selection}-h{half_selection}-{segment}.mp4"
-            #(filename)
-            file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
-            # files = list_files_in_folder(FOLDER_ID)
-            # file_id = get_file_id(filename, files)
-            
-            if file_id:
-                #video_url = f"https://drive.google.com/uc?export=download&id={file_id}"
-                #video_url = f"https://drive.google.com/file/d/{file_id}/view"
-                video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={time_within_segment}"
+        if len(clip_titles_t2) > 0:
+            match_selection = data.loc[data['title'] == selection]['match_id'].values[0]
+            half_selection = data.loc[data['title'] == selection]['period'].values[0]
+            time_selection = data.loc[data['title'] == selection]['timestamp'].values[0]
 
 
-                #print(f"{filename} -> Video URL: {video_url}")  # Debug print statement
-                # Use an HTML video tag
-                #st.markdown(f'<video width="640" height="480" controls><source src="{video_url}" type="video/mp4">Your browser does not support the video tag.</video>', unsafe_allow_html=True)
-                st.markdown(f'<iframe src="{video_url}" width="704" height="528" frameborder="0" allow="autoplay"; encrypted-media" allowfullscreen></iframe>', unsafe_allow_html=True)
+            def find_closest_segment_with_times(time_str, segment_length = 60, overlap = 30):
+                # Convert time_str to seconds
+                minutes, seconds = map(int, time_str.split(':'))
+                time_in_seconds = (minutes * 60 + seconds) - 5 #5 seconds before clip
+
+                # Calculate segment details
+                step = segment_length - overlap
+                segment_number = time_in_seconds // step + 1
                 
-
+                # Calculate the start time of the segment
+                start_time = (segment_number - 1) * step
+                end_time = start_time + segment_length
                 
-                #st.video(video_url)
-                #
-            else:
-                st.error(f"Video '{filename}' not found in the folder.")
+                # Calculate time within segment
+                time_within_segment = time_in_seconds - start_time
+                
+                return segment_number, time_within_segment
+
+            # # Example usage
+            # segment_length = 60  # 1 minute segments
+            # overlap = 30  # 30 seconds overlap
+
+            time_str = time_selection[3:8]
+            #print(time_str)
+            segment, time_within_segment = find_closest_segment_with_times(time_str)
+    
+
+            csv_file_path = 'drive_files.csv'
+            files_df = pd.read_csv(csv_file_path)
+
+            def display_video(match_selection, half_selection, segment):
+                
+                filename = f"{match_selection}-h{half_selection}-{segment}.mp4"
+                #(filename)
+                file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
+                # files = list_files_in_folder(FOLDER_ID)
+                # file_id = get_file_id(filename, files)
+                
+                if file_id:
+                    #video_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+                    #video_url = f"https://drive.google.com/file/d/{file_id}/view"
+                    video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={time_within_segment}"
 
 
-        display_video(match_selection, half_selection, segment)
-        
-        # col1, col2 = st.columns(2)
+                    #print(f"{filename} -> Video URL: {video_url}")  # Debug print statement
+                    # Use an HTML video tag
+                    #st.markdown(f'<video width="640" height="480" controls><source src="{video_url}" type="video/mp4">Your browser does not support the video tag.</video>', unsafe_allow_html=True)
+                    st.markdown(f'<iframe src="{video_url}" width="704" height="528" frameborder="0" allow="autoplay"; encrypted-media" allowfullscreen></iframe>', unsafe_allow_html=True)
+                    
 
-        # with col1:
-        st.button("Previous Clip", on_click=update_index, args=(-1,), disabled=(st.session_state.clip_index_t2 <= 0), key="prev_clip_button_t2")
+                    
+                    #st.video(video_url)
+                    #
+                else:
+                    st.error(f"Video '{filename}' not found in the folder.")
 
-        # with col2:
-        st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t2 >= len(clip_titles_t2) - 1), key="next_clip_button_t2")
-         
+
+            display_video(match_selection, half_selection, segment)
+            
+            # col1, col2 = st.columns(2)
+
+            # with col1:
+            st.button("Previous Clip", on_click=update_index_t2, args=(-1,), disabled=(st.session_state.clip_index_t2 <= 0), key="prev_clip_button_t2")
+
+            # with col2:
+            st.button("Next Clip", on_click=update_index_t2, args=(1,), disabled=(st.session_state.clip_index_t2 >= len(clip_titles_t2) - 1), key="next_clip_button_t2")
+            
         
 
         # st.session_state.old_selected_points = st.session_state.selected_points
@@ -1758,7 +1818,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         
         # # if st.session_state.selected_points
 
-
+ 
 
 
         
@@ -1805,12 +1865,12 @@ if individual == 'Team' and len(selected_ids) > 0:
        
         col1, col2, col3 = st.columns(3)
         with col1: custom_progress_bar(int(pct1), f"Vertical Sequences   ({round(team_rankings[team_rankings['Team'] == selected_team]['Vertical Sequences'].values[0],1)})")
-        with col2: custom_progress_bar(int(pct1), f"% of Passes Forward   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% of Passes Forward'].values[0],2) * 100)}%)")
-        with col3: custom_progress_bar(int(pct1), f"Avg. Seq. Speed   ({round(team_rankings[team_rankings['Team'] == selected_team]['Avg Sequence Speed'].values[0],1)} m/s)")
+        with col2: custom_progress_bar(int(pct2), f"% of Passes Forward   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% of Passes Forward'].values[0],2) * 100)}%)")
+        with col3: custom_progress_bar(int(pct3), f"Avg. Seq. Speed   ({round(team_rankings[team_rankings['Team'] == selected_team]['Avg Sequence Speed'].values[0],1)} m/s)")
         
-        with col1: custom_progress_bar(int(pct2), f"Box Entries from Vert.   ({round(team_rankings[team_rankings['Team'] == selected_team]['Box Entries from Vertical Sequences'].values[0],1)})")
-        with col2: custom_progress_bar(int(pct4), f"xG from Vert.   ({round(team_rankings[team_rankings['Team'] == selected_team]['xG from Vertical Sequences'].values[0],1)})")
-        with col3: custom_progress_bar(int(pct5), f"Goals from Vert.   ({round(team_rankings[team_rankings['Team'] == selected_team]['Goals from Vertical Sequences'].values[0],1)})")
+        with col1: custom_progress_bar(int(pct4), f"Box Entries from Vert.   ({round(team_rankings[team_rankings['Team'] == selected_team]['Box Entries from Vertical Sequences'].values[0],1)})")
+        with col2: custom_progress_bar(int(pct5), f"xG from Vert.   ({round(team_rankings[team_rankings['Team'] == selected_team]['xG from Vertical Sequences'].values[0],1)})")
+        with col3: custom_progress_bar(int(pct6), f"Goals from Vert.   ({round(team_rankings[team_rankings['Team'] == selected_team]['Goals from Vertical Sequences'].values[0],1)})")
 
         
         st.write("")
@@ -2065,6 +2125,10 @@ if individual == 'Team' and len(selected_ids) > 0:
             # Filter based on selected match ids
             vert_events = vert_events[vert_events['match_id'].isin(selected_ids)] 
 
+            customdata = vert_events['title']
+
+
+
         
             # Plot the goal kick events
             fig.add_trace(go.Scatter(
@@ -2072,11 +2136,20 @@ if individual == 'Team' and len(selected_ids) > 0:
                 y= vert_events['vert_end_y'],
                 
                 mode='markers',
-                marker=dict(color='white', size=8),
-                name="Verticality End",
+                marker=dict(color='purple', size=5),
+                name="Vert End",
                 hoverinfo="text",
-                text=vert_events['title'].astype(str) + " -> " + vert_events['vert_end_player'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+                #text=vert_events['title'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+                hovertemplate="<b>%{customdata}</b><extra></extra>",
+                customdata=customdata,
+                hoverlabel=dict(bgcolor="white", font_size=12, font_family="Arial"),
+            
             ))
+            fig.update_layout(
+                hoverdistance=10,  # Increase hover area
+                hovermode="closest",
+                showlegend=False
+            )
             
             
 
@@ -2144,10 +2217,10 @@ if individual == 'Team' and len(selected_ids) > 0:
             )
         
         if metric == 'Vertical Sequences': data = pd.read_parquet(f"{league}VideoVerticalityEvents.parquet")
-        elif metric == 'Final Quarter Entries': data = pd.read_parquet("vert_final_quarter_entries_video_events.parquet")
-        elif metric == 'Box Entries': data = pd.read_parquet("vert_box_entries_video_events.parquet")
-        elif metric == 'Shots': data = pd.read_parquet("vert_shots_video_events.parquet")
-        elif metric == 'Goals': data = pd.read_parquet("vert_goals_video_events.parquet")
+        elif metric == 'Final Quarter Entries': data = pd.read_parquet(f"{league}vert_final_quarter_entries_video_events.parquet")
+        elif metric == 'Box Entries': data = pd.read_parquet(f"{league}vert_box_entries_video_events.parquet")
+        elif metric == 'Shots': data = pd.read_parquet(f"{league}vert_shots_video_events.parquet")
+        elif metric == 'Goals': data = pd.read_parquet(f"{league}vert_goals_video_events.parquet")
         data = data.drop_duplicates(subset = ['match_id', 'period']).reset_index()
 
         data = data[data['match_id'].isin(selected_ids)].reset_index()
@@ -2162,14 +2235,14 @@ if individual == 'Team' and len(selected_ids) > 0:
         
         if 'clip_index_t3' not in st.session_state:
             st.session_state.clip_index_t3 = 0
-        def update_index(step):
+        def update_index_t3(step):
             new_index = st.session_state.clip_index_t3 + step
             if 0 <= new_index < len(clip_titles_t3):
                 st.session_state.clip_index_t3 = new_index
                 st.session_state.clip_selector_t3 = clip_titles_t3[new_index]
 
-        sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
-        clip_titles_t3 = sorted_data['title'].tolist()
+        sorted_data_t3 = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
+        clip_titles_t3 = sorted_data_t3['title'].tolist()
 
         
         with col2:
@@ -2256,10 +2329,10 @@ if individual == 'Team' and len(selected_ids) > 0:
         # col1, col2 = st.columns(2)
 
         # with col1:
-        st.button("Previous Clip", on_click=update_index, args=(-1,), disabled=(st.session_state.clip_index_t3 <= 0), key="prev_clip_button_t3")
+        st.button("Previous Clip", on_click=update_index_t3, args=(-1,), disabled=(st.session_state.clip_index_t3 <= 0), key="prev_clip_button_t3")
 
         # with col2:
-        st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t3 >= len(clip_titles_t3) - 1), key="next_clip_button_t3")
+        st.button("Next Clip", on_click=update_index_t3, args=(1,), disabled=(st.session_state.clip_index_t3 >= len(clip_titles_t3) - 1), key="next_clip_button_t3")
          
         
 
@@ -2349,8 +2422,8 @@ if individual == 'Team' and len(selected_ids) > 0:
        
         col1, col2, col3 = st.columns(3)
         with col1: custom_progress_bar(int(pct1), f"Switches Completed   ({round(team_rankings[team_rankings['Team'] == selected_team]['Switches'].values[0],1)})")
-        with col2: custom_progress_bar(int(pct1), f"Switch Accuracy   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Switch Accuracy'].values[0],2) * 100)}%)")
-        with col3: custom_progress_bar(int(pct1), f"Switches to Shots   ({round(team_rankings[team_rankings['Team'] == selected_team]['Switches Leading to Shots'].values[0],1)})")
+        with col2: custom_progress_bar(int(pct2), f"Switch Accuracy   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Switch Accuracy'].values[0],2) * 100)}%)")
+        with col3: custom_progress_bar(int(pct3), f"Switches to Shots   ({round(team_rankings[team_rankings['Team'] == selected_team]['Switches Leading to Shots'].values[0],1)})")
         
         
         
@@ -2604,24 +2677,43 @@ if individual == 'Team' and len(selected_ids) > 0:
             # Filter based on selected match ids
             switch_events = switch_events[switch_events['match_id'].isin(selected_ids)] 
 
-        
+            customdata = switch_events['title']
+
+            for index, row in switch_events.iterrows():
+                fig.add_trace(go.Scatter(
+                    x=[row['x'], row['pass_end_x']],
+                    y=[row['y'], row['pass_end_y']],
+                    mode='lines',
+                    line=dict(color='rgba(255, 255, 255, 0.5)', width=1),
+                    showlegend=False,
+                    hoverinfo='skip'
+                ))
+
             # Plot the goal kick events
             fig.add_trace(go.Scatter(
-                x= switch_events['pass_end_x'],
-                y= switch_events['pass_end_y'],
+                x= switch_events['x'],
+                y= switch_events['y'],
                 
                 mode='markers',
-                marker=dict(color='white', size=8),
+                marker=dict(color='purple', size=5),
                 name="Switch End",
                 hoverinfo="text",
-                text=switch_events['title'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+                #text=switch_events['title'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+                hovertemplate="<b>%{customdata}</b><extra></extra>",
+                customdata=customdata,
+                hoverlabel=dict(bgcolor="white", font_size=12, font_family="Arial"),
             ))
+            fig.update_layout(
+                hoverdistance=10,  # Increase hover area
+                hovermode="closest",
+                showlegend=False
+            )
             
             
 
 
             # Add title and direction of attack
-            fig.add_annotation(text="End Location of Switches", xref="paper", yref="paper",
+            fig.add_annotation(text="Switches", xref="paper", yref="paper",
                             x=0.5, y=1.05, showarrow=False, font=dict(color="white", size=14), align="center")
             fig.add_annotation(text="Direction of Attack --->", xref="paper", yref="paper",
                             x=0.5, y=-0.05, showarrow=False, font=dict(color="white", size=12), align="center")
@@ -2654,9 +2746,10 @@ if individual == 'Team' and len(selected_ids) > 0:
                 if len(selected_points_t4) > 0:
                     clicked_point = selected_points_t4[0]  # If multiple points, handle accordingly
                     clicked_index = clicked_point['pointIndex']
-                    clicked_event = vert_events.iloc[clicked_index]
+                    clicked_event = switch_events.iloc[clicked_index]
                 
                     filename = clicked_event['filename']
+                    print(filename)
                     start_time = clicked_event['start_time']
                     file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
                     # Extract video info (filename and start_time)
@@ -2683,9 +2776,9 @@ if individual == 'Team' and len(selected_ids) > 0:
             )
         
         if metric == 'Switches': data = pd.read_parquet(f"{league}VideoSwitchEvents.parquet")
-        elif metric == '-> Box Entries': data = pd.read_parquet("switch_box_entries_video_events.parquet")
-        elif metric == '-> Shots': data = pd.read_parquet("switch_shots_video_events.parquet")
-        elif metric == 'Inaccurate Switches': data = pd.read_parquet("innacurate_switches_video_events.parquet")
+        elif metric == '-> Box Entries': data = pd.read_parquet(f"{league}switch_box_entries_video_events.parquet")
+        elif metric == '-> Shots': data = pd.read_parquet(f"{league}switch_shots_video_events.parquet")
+        elif metric == 'Inaccurate Switches': data = pd.read_parquet(f"{league}innacurate_switches_video_events.parquet")
         data = data.drop_duplicates(subset = ['match_id', 'period']).reset_index()
 
         data = data[data['match_id'].isin(selected_ids)].reset_index()
@@ -2700,14 +2793,14 @@ if individual == 'Team' and len(selected_ids) > 0:
         
         if 'clip_index_t4' not in st.session_state:
             st.session_state.clip_index_t4 = 0
-        def update_index(step):
+        def update_index_t4(step):
             new_index = st.session_state.clip_index_t4 + step
             if 0 <= new_index < len(clip_titles_t4):
                 st.session_state.clip_index_t4 = new_index
                 st.session_state.clip_selector_t4 = clip_titles_t4[new_index]
 
-        sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
-        clip_titles_t4 = sorted_data['title'].tolist()
+        sorted_data_t4 = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
+        clip_titles_t4 = sorted_data_t4['title'].tolist()
 
         
         with col2:
@@ -2794,10 +2887,10 @@ if individual == 'Team' and len(selected_ids) > 0:
         # col1, col2 = st.columns(2)
 
         # with col1:
-        st.button("Previous Clip", on_click=update_index, args=(-1,), disabled=(st.session_state.clip_index_t4 <= 0), key="prev_clip_button_t4")
+        st.button("Previous Clip", on_click=update_index_t4, args=(-1,), disabled=(st.session_state.clip_index_t4 <= 0), key="prev_clip_button_t4")
 
         # with col2:
-        st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t4 >= len(clip_titles_t4) - 1), key="next_clip_button_t4")
+        st.button("Next Clip", on_click=update_index_t4, args=(1,), disabled=(st.session_state.clip_index_t4 >= len(clip_titles_t4) - 1), key="next_clip_button_t4")
          
         
 
@@ -2890,12 +2983,12 @@ if individual == 'Team' and len(selected_ids) > 0:
        
         col1, col2, col3 = st.columns(3)
         with col1: custom_progress_bar(int(pct1), f"Crosses Completed   ({round(team_rankings[team_rankings['Team'] == selected_team]['Crosses Completed'].values[0],1)})")
-        with col2: custom_progress_bar(int(pct1), f"Cross Accuracy   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Cross Accuracy'].values[0],2) * 100)}%)")
-        with col3: custom_progress_bar(int(pct1), f"Deep Crosses   ({round(team_rankings[team_rankings['Team'] == selected_team]['Deep Crosses'].values[0],1)})")
+        with col2: custom_progress_bar(int(pct2), f"Cross Accuracy   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Cross Accuracy'].values[0],2) * 100)}%)")
+        with col3: custom_progress_bar(int(pct3), f"Deep Crosses   ({round(team_rankings[team_rankings['Team'] == selected_team]['Deep Crosses'].values[0],1)})")
         
-        with col1: custom_progress_bar(int(pct1), f"Crosses to Shots   ({round(team_rankings[team_rankings['Team'] == selected_team]['Crosses Leading to Shots'].values[0],1)})")
-        with col2: custom_progress_bar(int(pct1), f"Crosses to Goals   ({round(team_rankings[team_rankings['Team'] == selected_team]['Crosses Leading to Goals'].values[0],1)})")
-        with col3: custom_progress_bar(int(pct1), f"Deep Crosses to Shots   ({round(team_rankings[team_rankings['Team'] == selected_team]['Deep Crosses Leading to Shots'].values[0],1)})")
+        with col1: custom_progress_bar(int(pct4), f"Crosses to Shots   ({round(team_rankings[team_rankings['Team'] == selected_team]['Crosses Leading to Shots'].values[0],1)})")
+        with col2: custom_progress_bar(int(pct5), f"Crosses to Goals   ({round(team_rankings[team_rankings['Team'] == selected_team]['Crosses Leading to Goals'].values[0],1)})")
+        with col3: custom_progress_bar(int(pct6), f"Deep Crosses to Shots   ({round(team_rankings[team_rankings['Team'] == selected_team]['Deep Crosses Leading to Shots'].values[0],1)})")
         
         
         
@@ -3144,15 +3237,20 @@ if individual == 'Team' and len(selected_ids) > 0:
             # st.image(buf, use_column_width=True)
             st.session_state.old_selected_points_t5 = st.session_state.selected_points_t5
             fig = create_pitch(480,320)
-            #fig = create_pitch(600,400)
+            #fig = create_pitch(600,400) 
             
             # Load Goal Kick Event Data
             # Replace this with your parquet file, and make sure you have your dataframe loaded.
             #cross_events = pd.read_parquet(f"{league}VideoCrossEvents.parquet")
-            cross_events = pd.read_parquet(f"crosses_to_shots_video_events.parquet")
+            cross_events = pd.read_parquet(f"{league}crosses_to_shots_video_events.parquet")
 
             # Filter based on selected match ids
             cross_events = cross_events[cross_events['match_id'].isin(selected_ids)] 
+
+            customdata = cross_events['title']
+            colors = ['green' if goal else 'purple' for goal in cross_events['cross_leading_to_goal']]
+
+
 
         
             # Plot the goal kick events
@@ -3161,11 +3259,19 @@ if individual == 'Team' and len(selected_ids) > 0:
                 y= cross_events['y'],
                 
                 mode='markers',
-                marker=dict(color='white', size=8),
-                name="Cross Start",
+                marker=dict(color=colors, size=5),
+                name="Cross End",
                 hoverinfo="text",
-                text=cross_events['title'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+                #text=cross_events['title'].astype(str)# + ", " + gk_events['gk_end_y'].astype(str)
+                hovertemplate="<b>%{customdata}</b><extra></extra>",
+                customdata=customdata,
+                hoverlabel=dict(bgcolor="white", font_size=12, font_family="Arial"),
             ))
+            fig.update_layout(
+                hoverdistance=10,  # Increase hover area
+                hovermode="closest",
+                showlegend=False
+            )
             
             
 
@@ -3232,10 +3338,10 @@ if individual == 'Team' and len(selected_ids) > 0:
             ['Crosses Completed', '-> Shots', '-> Goals', 'Deep Crosses']
             )
         
-        if metric == 'Crosses Completed': data = pd.read_parquet("crosses_completed_video_events.parquet")
-        elif metric == '-> Shots': data = pd.read_parquet("scrosses_to_shots_video_events.parquet")
-        elif metric == '-> Goals': data = pd.read_parquet("crosses_to_goals_video_events.parquet")
-        elif metric == 'Deep Crosses': data = pd.read_parquet("deep_crosses_to_shots_video_events.parquet")
+        if metric == 'Crosses Completed': data = pd.read_parquet(f"{league}crosses_completed_video_events.parquet")
+        elif metric == '-> Shots': data = pd.read_parquet(f"{league}crosses_to_shots_video_events.parquet")
+        elif metric == '-> Goals': data = pd.read_parquet(f"{league}crosses_to_goals_video_events.parquet")
+        elif metric == 'Deep Crosses': data = pd.read_parquet(f"{league}deep_crosses_to_shots_video_events.parquet")
         data = data.drop_duplicates(subset = ['match_id', 'period']).reset_index()
 
         data = data[data['match_id'].isin(selected_ids)].reset_index()
@@ -3250,14 +3356,14 @@ if individual == 'Team' and len(selected_ids) > 0:
         
         if 'clip_index_t5' not in st.session_state:
             st.session_state.clip_index_t5 = 0
-        def update_index(step):
+        def update_index_t5(step):
             new_index = st.session_state.clip_index_t5 + step
             if 0 <= new_index < len(clip_titles_t5):
                 st.session_state.clip_index_t5 = new_index
                 st.session_state.clip_selector_t5 = clip_titles_t5[new_index]
 
-        sorted_data = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
-        clip_titles_t5 = sorted_data['title'].tolist()
+        sorted_data_t5 = data.sort_values(by=['match_id', 'period', 'timestamp'], ascending=[False, True, True])
+        clip_titles_t5 = sorted_data_t5['title'].tolist()
 
         
         with col2:
@@ -3344,10 +3450,10 @@ if individual == 'Team' and len(selected_ids) > 0:
         # col1, col2 = st.columns(2)
 
         # with col1:
-        st.button("Previous Clip", on_click=update_index, args=(-1,), disabled=(st.session_state.clip_index_t5 <= 0), key="prev_clip_button_t5")
+        st.button("Previous Clip", on_click=update_index_t5, args=(-1,), disabled=(st.session_state.clip_index_t5 <= 0), key="prev_clip_button_t5")
 
         # with col2:
-        st.button("Next Clip", on_click=update_index, args=(1,), disabled=(st.session_state.clip_index_t5 >= len(clip_titles_t4) - 1), key="next_clip_button_t5")
+        st.button("Next Clip", on_click=update_index_t5, args=(1,), disabled=(st.session_state.clip_index_t5 >= len(clip_titles_t4) - 1), key="next_clip_button_t5")
          
         
 
