@@ -683,7 +683,17 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'Hartford Athletic': 'Hartford',
                 'Monterey Bay': 'Monterey',
                 'Orange County SC': 'Orange County',
-                'El Paso Locomotive': 'El Paso'
+                'El Paso Locomotive': 'El Paso',
+                'Orlando Pride': 'Orlando',
+                'Washington Spirit': 'Washington',
+                'NJ/NY Gotham FC': 'Gotham',
+                'North Carolina Courage': 'NC Courage',
+                'Portland Thorns': 'Portland',
+                'Chicago Red Stars': 'Chicago',
+                'Seattle Reign': 'Seattle',
+                'San Diego Wave': 'San Diego',
+                'Houston Dash': 'Houston',
+                'Utah Royals': 'Utah'
                 
             })
             shortened_pressing_data.set_index('Team', inplace=True)
@@ -901,6 +911,31 @@ if individual == 'Team' and len(selected_ids) > 0:
                 elif x == 'Tola Showunmi': return 'T. Showunmi'
                 elif x == 'Emmanuel Perez': return 'E. Perez'
                 elif x == 'Wilson Harris': return "W. Harris"
+                elif x == 'Savannah Marie DeMelo': return 'S. DeMelo'
+                elif x == 'Elexa Marie Bahr Gutiérrez': return 'E. Bahr'
+                elif x == 'Reilyn Turner': return 'R. Turner'
+                elif x == 'Elli Pikkujämsä': return 'E. Pikkujämsä'
+                elif x == 'Katie Lund': return 'K. Lund'
+                elif x == 'Taylor Flint': return 'T. Flint'
+                elif x == 'Uchenna Kanu': return 'U. Kanu'
+                elif x == 'Carson Pickett': return 'Carson Pickett'
+                elif x == 'Jordan Elisabeth Baggett': return 'J.Baggett'
+                elif x == 'Lauren Milliet': return 'L. Milliet'
+                elif x == 'Abby Erceg': return 'A. Erceg'
+                elif x == 'Emma Sears': return 'E. Sears'
+                elif x == 'Jaelin Marie Howell': return 'J. Howell'
+                elif x == 'Kayla Fischer': return 'K. Fischer'
+                elif x == 'Linda Maserame Motlhalo': return 'L. Motlhalo'
+                elif x == 'Parker Goins': return 'P. Goins'
+                elif x == 'Arin Wright': return 'A. Wright'
+                elif x == 'Maddie Ann Pokorny': return 'M. Pokorny'
+                elif x == 'Marisa Marie DiGrande': return 'M. DiGrande'
+                elif x == 'Ellie Charlotte Jean': return 'E. ean'
+                elif x == 'Ariadina Alves Borges': return 'A. Borges'
+                elif x == 'Bethany Balcer': return 'B. Balcer'
+                elif x == 'Janine Elizabeth Beckie': return 'J. Beckie'
+                elif x == 'Courtney Petersen': return 'C. Petersen'
+
                 
                 else: return x
 
@@ -928,6 +963,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 elif x == 'Jorge Gonzalez Asensi':  return "LouCityPlayerPhotos/Gonzalez.png"
                 elif x == 'Tola Showunmi': return "LouCityPlayerPhotos/Showunmi.png"
                 elif x == 'Emmanuel Perez': return "LouCityPlayerPhotos/MPerez.png"
+
                 else: return "LouCityPlayerPhotos/EmptyPhoto.png"
                 
             def add_player_image(ax, player, x, y, width, height):
@@ -1502,7 +1538,17 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'Hartford Athletic': 'Hartford',
                 'Monterey Bay': 'Monterey',
                 'Orange County SC': 'Orange County',
-                'El Paso Locomotive': 'El Paso'
+                'El Paso Locomotive': 'El Paso',
+                'Orlando Pride': 'Orlando',
+                'Washington Spirit': 'Washington',
+                'NJ/NY Gotham FC': 'Gotham',
+                'North Carolina Courage': 'NC Courage',
+                'Portland Thorns': 'Portland',
+                'Chicago Red Stars': 'Chicago',
+                'Seattle Reign': 'Seattle',
+                'San Diego Wave': 'San Diego',
+                'Houston Dash': 'Houston',
+                'Utah Royals': 'Utah'
                 
             })
             shortened_gk_data.set_index('Team', inplace=True)
@@ -2066,7 +2112,17 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'Hartford Athletic': 'Hartford',
                 'Monterey Bay': 'Monterey',
                 'Orange County SC': 'Orange County',
-                'El Paso Locomotive': 'El Paso'
+                'El Paso Locomotive': 'El Paso',
+                'Orlando Pride': 'Orlando',
+                'Washington Spirit': 'Washington',
+                'NJ/NY Gotham FC': 'Gotham',
+                'North Carolina Courage': 'NC Courage',
+                'Portland Thorns': 'Portland',
+                'Chicago Red Stars': 'Chicago',
+                'Seattle Reign': 'Seattle',
+                'San Diego Wave': 'San Diego',
+                'Houston Dash': 'Houston',
+                'Utah Royals': 'Utah'
                 
             })
             shortened_vert_data.set_index('Team', inplace=True)
@@ -2618,7 +2674,17 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'Hartford Athletic': 'Hartford',
                 'Monterey Bay': 'Monterey',
                 'Orange County SC': 'Orange County',
-                'El Paso Locomotive': 'El Paso'
+                'El Paso Locomotive': 'El Paso',
+                'Orlando Pride': 'Orlando',
+                'Washington Spirit': 'Washington',
+                'NJ/NY Gotham FC': 'Gotham',
+                'North Carolina Courage': 'NC Courage',
+                'Portland Thorns': 'Portland',
+                'Chicago Red Stars': 'Chicago',
+                'Seattle Reign': 'Seattle',
+                'San Diego Wave': 'San Diego',
+                'Houston Dash': 'Houston',
+                'Utah Royals': 'Utah'
                 
             })
             shortened_switch_data.set_index('Team', inplace=True)
@@ -3187,7 +3253,17 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'Hartford Athletic': 'Hartford',
                 'Monterey Bay': 'Monterey',
                 'Orange County SC': 'Orange County',
-                'El Paso Locomotive': 'El Paso'
+                'El Paso Locomotive': 'El Paso',
+                'Orlando Pride': 'Orlando',
+                'Washington Spirit': 'Washington',
+                'NJ/NY Gotham FC': 'Gotham',
+                'North Carolina Courage': 'NC Courage',
+                'Portland Thorns': 'Portland',
+                'Chicago Red Stars': 'Chicago',
+                'Seattle Reign': 'Seattle',
+                'San Diego Wave': 'San Diego',
+                'Houston Dash': 'Houston',
+                'Utah Royals': 'Utah'
                 
             })
             shortened_cross_data.set_index('Team', inplace=True)
