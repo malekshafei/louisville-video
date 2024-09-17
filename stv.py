@@ -295,8 +295,9 @@ with st.sidebar:
         else:
             selected_options =  container.multiselect("Select Matches",
         list(reversed(matches)))
-    last_x = 5       
+        
     if full == 'Last x Matches':
+        last_x = 5   
         last_x = st.slider(f"Last {last_x} games", 1, len(matches), 1)
         
 
