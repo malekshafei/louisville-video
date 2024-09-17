@@ -134,13 +134,14 @@ men_matches = [
     '8/17 vs Charleston',
     '8/24 @ Hartford',
     '8/31 @ North Carolina',
-    '9/6 vs Loudoun'
+    '9/6 vs Loudoun',
+    '9/14 @ Tulsa'
            ]
 
 men_match_ids = [3930232, 3930247, 3930255, 3930266, 3930274, 3930288, 3930307,
             3930327, 3930340, 3930351, 3930354, 3930357, 3930369, 3930382,
             3930392, 3930399, 3930412, 3930424, 3930444, 3930456, 3930475,
-            3930487, 3930499, 3930506, 3930524, 3930527]
+            3930487, 3930499, 3930506, 3930524, 3930527, 3930541]
 
 women_matches = [
     '3/16 vs Orlando',
@@ -161,11 +162,12 @@ women_matches = [
     '6/7 @ North Carolina',
     '8/24 vs Chicago',
     '8/31 vs Seattle',
-    '9/7 @ Bay'
+    '9/7 @ Bay',
+    '9/14 vs Angel City'
 ]
 women_match_ids = [3931339, 3931349, 3931357, 3931362, 3931368, 3931379,
                     3931388, 3931393, 3931403, 3931413, 3931414, 3931422, 3931429, 3931435,
-                    3931439, 3931449, 3931455, 3931460, 3931467]
+                    3931439, 3931449, 3931455, 3931460, 3931467, 3931475]
 
 
 
@@ -963,6 +965,30 @@ if individual == 'Team' and len(selected_ids) > 0:
                 elif x == 'Jorge Gonzalez Asensi':  return "LouCityPlayerPhotos/Gonzalez.png"
                 elif x == 'Tola Showunmi': return "LouCityPlayerPhotos/Showunmi.png"
                 elif x == 'Emmanuel Perez': return "LouCityPlayerPhotos/MPerez.png"
+                elif x == 'Savannah Marie DeMelo': return "LouCityPlayerPhotos/DeMelo.png"
+                elif x == 'Elexa Marie Bahr Gutiérrez': return "LouCityPlayerPhotos/Bahr.png"
+                elif x == 'Reilyn Turner': return "LouCityPlayerPhotos/Turner.png"
+                elif x == 'Elli Pikkujämsä': return "LouCityPlayerPhotos/Pikkujamsa.png"
+                elif x == 'Katie Lund': return "LouCityPlayerPhotos/Lund.png"
+                elif x == 'Taylor Flint': return "LouCityPlayerPhotos/Flint.png"
+                elif x == 'Uchenna Kanu': return "LouCityPlayerPhotos/Kanu.png"
+                elif x == 'Carson Pickett': return "LouCityPlayerPhotos/Pickett.png"
+                elif x == 'Jordan Elisabeth Baggett': return "LouCityPlayerPhotos/Baggett.png"
+                elif x == 'Lauren Milliet': return "LouCityPlayerPhotos/Milliet.png"
+                elif x == 'Abby Erceg': return "LouCityPlayerPhotos/Erceg.png"
+                elif x == 'Emma Sears': return "LouCityPlayerPhotos/Sears.png"
+                elif x == 'Jaelin Marie Howell': return "LouCityPlayerPhotos/Howell.png"
+                elif x == 'Kayla Fischer': return "LouCityPlayerPhotos/Fischer.png"
+                elif x == 'Linda Maserame Motlhalo': return "LouCityPlayerPhotos/Motlhalo.png"
+                elif x == 'Parker Goins': return "LouCityPlayerPhotos/Goins.png"
+                elif x == 'Arin Wright': return "LouCityPlayerPhotos/Wright.png"
+                elif x == 'Maddie Ann Pokorny': return "LouCityPlayerPhotos/Pokorny.png"
+                elif x == 'Marisa Marie DiGrande': return "LouCityPlayerPhotos/Viggiano.png"
+                elif x == 'Ellie Charlotte Jean': return "LouCityPlayerPhotos/Jean.png"
+                elif x == 'Ariadina Alves Borges': return "LouCityPlayerPhotos/Borges.png"
+                elif x == 'Bethany Balcer': return "LouCityPlayerPhotos/Balcer.png"
+                elif x == 'Janine Elizabeth Beckie': return "LouCityPlayerPhotos/Beckie.png"
+                elif x == 'Courtney Petersen': return "LouCityPlayerPhotos/Petersen.png"
 
                 else: return "LouCityPlayerPhotos/EmptyPhoto.png"
                 
