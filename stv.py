@@ -298,7 +298,7 @@ with st.sidebar:
         
     if full == 'Last x Matches':
         last_x = 5   
-        last_x = st.slider(f"Last how many games?", 1, len(matches), 1)
+        last_x = st.slider(f"Last how many games?", 1, len(matches), 5)
         
 
 
@@ -1778,12 +1778,12 @@ if individual == 'Team' and len(selected_ids) > 0:
             # print(len(clip_titles_t2))
             selection = st.selectbox('Choose Clip', clip_titles_t2, index=st.session_state.clip_index_t2, key='clip_selector_t2' )
             
-            if selection == None: selection = clip_titles_t2[st.session_state.clip_index_t2]
-            # print(selection)
-            # print(len(clip_titles_t2))
-            # print(st.session_state.clip_index_t2)
-            # print("")
-            # print
+            if selection == None and len(clip_titles_t2) > 0: selection = clip_titles_t2[st.session_state.clip_index_t2]
+            print(selection)
+            print(len(clip_titles_t2))
+            print(st.session_state.clip_index_t2)
+            print("")
+            print
             if len(clip_titles_t2) > 0:
                 if (selection != clip_titles_t2[st.session_state.clip_index_t2]):
                     st.session_state.clip_index_t2 = clip_titles_t2.index(selection)
