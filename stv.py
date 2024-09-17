@@ -231,7 +231,7 @@ def create_pitch(fw = 600, fh = 400):
 
 
 def custom_progress_bar(value, label):
-    if value > 75:
+    if value >= 75:
         color = "#4CAF50"  # Green
     elif value >= 50: 
         color = 'yellow'
@@ -283,7 +283,7 @@ with st.sidebar:
     if individual == 'Player': 
         player_selection = st.selectbox('Choose Player', player_list)
     full = 'Full Season'
-    full = st.radio('Full Season or Select Matches?', ['Full Season', 'Select Matches'])
+    full = st.radio('Full Season or Select Matches?', ['Full Season', 'Select Matches', 'Last x Matches'])
     if full == 'Select Matches':
 
         container = st.container()
@@ -295,10 +295,18 @@ with st.sidebar:
         else:
             selected_options =  container.multiselect("Select Matches",
         list(reversed(matches)))
+    last_x = 5       
+    if full == 'Last x Matches':
+        last_x = st.slider(f"Last {last_x} games", 1, len(matches), 1)
+        
+
+
 
     selected_ids = []   
     if full == 'Full Season':
         selected_ids = match_ids
+    elif full == 'Last x Matches':
+        selected_ids = match_ids[-last_x:]
     else:
         selected_indices = [list(reversed(matches)).index(option) for option in selected_options]
         selected_indices = [len(matches) - 1 - index for index in selected_indices]
@@ -309,6 +317,12 @@ with st.sidebar:
             st.error("Please select at least one match")
 
     league_data = pd.read_parquet(f"{league}TeamMatchLevelVideo.parquet")
+    league_data = league_data.sort_values(by=['Team', 'Match Date'])
+
+    if full == 'Last x Matches':
+        league_data = league_data.groupby('Team').tail(last_x)
+
+
     full_team_data = league_data[league_data['Team'] == selected_team]
     
     team_data = league_data[(league_data['match_id'].isin(selected_ids)) & (league_data['Team'] == selected_team)]
@@ -319,7 +333,7 @@ with st.sidebar:
 
     orig_cols = ['Avg. Defensive Distance',
                 'Att. Third Pressures',
-                'Def Half Entries Allowed',
+                'Def Third Entries Allowed',
                 'PPDA',
                 'Shots after Pressure Regains',
                 'Att. Half Regains',
@@ -349,7 +363,7 @@ with st.sidebar:
                 'Deep Crosses',
                 'Deep Crosses Leading to Shots']
     
-    neg_cols = ['PPDA', 'Def Half Entries Allowed'] 
+    neg_cols = ['PPDA', 'Def Third Entries Allowed'] 
     
     aggs = {col: 'mean' for col in orig_cols}
     aggs['Matches'] = 'size'
@@ -484,7 +498,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         pct3 = team_rankings[team_rankings['Team'] == selected_team]['pctShots after Pressure Regains'].values[0]
         pct4 = team_rankings[team_rankings['Team'] == selected_team]['pctPPDA'].values[0]
         pct5 = team_rankings[team_rankings['Team'] == selected_team]['pctAvg. Defensive Distance'].values[0]
-        pct6 = team_rankings[team_rankings['Team'] == selected_team]['pctDef Half Entries Allowed'].values[0]
+        pct6 = team_rankings[team_rankings['Team'] == selected_team]['pctDef Third Entries Allowed'].values[0]
         
        
         col1, col2, col3 = st.columns(3)
@@ -494,7 +508,7 @@ if individual == 'Team' and len(selected_ids) > 0:
 
         with col1: custom_progress_bar(int(pct4), f"PPDA   ({round(team_rankings[team_rankings['Team'] == selected_team]['PPDA'].values[0],1)})")
         with col2: custom_progress_bar(int(pct5), f"Avg. Def. Distance   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Avg. Defensive Distance'].values[0],1))}m)")
-        with col3: custom_progress_bar(int(pct6), f"Own Half Entries Conc.   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Def Half Entries Allowed'].values[0],1))})")
+        with col3: custom_progress_bar(int(pct6), f"Own Third Entries Conc.   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Def Third Entries Allowed'].values[0],1))})")
 
        
 
@@ -507,7 +521,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         #metrics = orig_cols#[col for col in df.columns if col != 'Match']
         metrics = ['Avg. Defensive Distance',
                 'Att. Third Pressures', 
-                'Def Half Entries Allowed',
+                'Def Third Entries Allowed',
                 'PPDA',
                 'Shots after Pressure Regains',
                 'Att. Half Regains']
@@ -664,7 +678,7 @@ if individual == 'Team' and len(selected_ids) > 0:
             for col in orig_cols:
                 team_rankings[col] = round(team_rankings[col],2)
                 shortened_pressing_data = team_rankings.sort_values(by = 'Pressing Rating', ascending=False)
-                shortened_pressing_data = shortened_pressing_data[['Team','Matches', 'Pressing Rating','Avg. Defensive Distance', 'Att. Third Pressures', 'Def Half Entries Allowed', 'PPDA', 'Shots after Pressure Regains', 'Att. Half Regains', ]]
+                shortened_pressing_data = shortened_pressing_data[['Team','Matches', 'Pressing Rating','Avg. Defensive Distance', 'Att. Third Pressures', 'Def Third Entries Allowed', 'PPDA', 'Shots after Pressure Regains', 'Att. Half Regains', ]]
                 #st.write(shortened_pressing_data)
 
             shortened_pressing_data['Team'] = shortened_pressing_data['Team'].replace({
