@@ -259,7 +259,7 @@ import streamlit.components.v1 as components
 
 player_list = ['Arturo Ordoñez', 'Sean Totsch', 'Kyle Adams', 'Wesley Charpie']
 
-
+ 
 with st.sidebar:
     selected_team = st.radio('Select Team', ['LouCity', 'Racing'])
     if selected_team == 'LouCity':
@@ -410,7 +410,7 @@ with st.sidebar:
 
     #print(selected_ids)
     if individual == 'Team' and len(selected_ids) > 0:
-        print(team_rankings['Team'].unique())
+        #print(team_rankings['Team'].unique())
         pct1 = team_rankings[team_rankings['Team'] == selected_team]['Pressing Rating'].values[0]
         
         pct2 = team_rankings[team_rankings['Team'] == selected_team]['Buildout Score'].values[0]
@@ -694,6 +694,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'Chicago Red Stars': 'Chicago',
                 'Seattle Reign': 'Seattle',
                 'San Diego Wave': 'San Diego',
+                'Racing Louisville FC': 'Racing',
                 'Houston Dash': 'Houston',
                 'Utah Royals': 'Utah'
                 
@@ -1311,7 +1312,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         def display_video(match_selection, half_selection, segment):
             
             filename = f"{match_selection}-h{half_selection}-{segment}.mp4"
-            #print(filename)
+            print(filename)
             file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
             # files = list_files_in_folder(FOLDER_ID)
             # file_id = get_file_id(filename, files)
@@ -1573,6 +1574,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'Chicago Red Stars': 'Chicago',
                 'Seattle Reign': 'Seattle',
                 'San Diego Wave': 'San Diego',
+                'Racing Louisville FC': 'Racing',
                 'Houston Dash': 'Houston',
                 'Utah Royals': 'Utah'
                 
@@ -2147,6 +2149,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'Chicago Red Stars': 'Chicago',
                 'Seattle Reign': 'Seattle',
                 'San Diego Wave': 'San Diego',
+                'Racing Louisville FC': 'Racing',
                 'Houston Dash': 'Houston',
                 'Utah Royals': 'Utah'
                 
@@ -2709,6 +2712,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'Chicago Red Stars': 'Chicago',
                 'Seattle Reign': 'Seattle',
                 'San Diego Wave': 'San Diego',
+                'Racing Louisville FC': 'Racing',
                 'Houston Dash': 'Houston',
                 'Utah Royals': 'Utah'
                 
@@ -3288,6 +3292,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'Chicago Red Stars': 'Chicago',
                 'Seattle Reign': 'Seattle',
                 'San Diego Wave': 'San Diego',
+                'Racing Louisville FC': 'Racing',
                 'Houston Dash': 'Houston',
                 'Utah Royals': 'Utah'
                 
