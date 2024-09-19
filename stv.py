@@ -257,7 +257,7 @@ def custom_progress_bar(value, label):
 import streamlit.components.v1 as components
 
 
-player_list = ['Arturo Ordoñez', 'Sean Totsch', 'Kyle Adams', 'Wesley Charpie']
+player_list = ['Arturo Osuna Ordoñez', 'Sean Totsch', 'Kyle Adams', 'Wesley Charpie']
 
  
 with st.sidebar:
@@ -279,212 +279,302 @@ with st.sidebar:
 
     #team = st.selectbox('Select Team', ['Louisville City'])
     #individual = st.radio('Team or Player Analyis?', ['Team', 'Player'])
-    individual = st.radio('Team or Player Analyis?', ['Team'])
-    if individual == 'Player': 
-        player_selection = st.selectbox('Choose Player', player_list)
-    full = 'Full Season'
-    full = st.radio('Full Season or Select Matches?', ['Full Season', 'Select Matches', 'Last x Matches'])
-    if full == 'Select Matches':
+    individual = st.radio('Team or Player Analyis?', ['Team', 'Player'])
+    if individual == 'Team':
+        full = 'Full Season'
+        full = st.radio('Full Season or Select Matches?', ['Full Season', 'Select Matches', 'Last x Matches'])
+        if full == 'Select Matches':
 
-        container = st.container()
-        #date_selection = st.multiselect("Select Matches", options = list(reversed(matches)))
-        all = st.checkbox("Select all")
-        if all:
-            selected_options = container.multiselect("Select Matches",
-            list(reversed(matches)),list(reversed(matches)))
-        else:
-            selected_options =  container.multiselect("Select Matches",
-        list(reversed(matches)))
-        
-    if full == 'Last x Matches':
-        last_x = 5   
-        last_x = st.slider(f"Last how many games?", 1, len(matches), 5)
-        
-
-
-
-    selected_ids = []   
-    if full == 'Full Season':
-        selected_ids = match_ids
-    elif full == 'Last x Matches':
-        selected_ids = match_ids[-last_x:]
-    else:
-        selected_indices = [list(reversed(matches)).index(option) for option in selected_options]
-        selected_indices = [len(matches) - 1 - index for index in selected_indices]
-
-        for ind in selected_indices:
-            selected_ids.append(match_ids[ind])
-        if selected_ids == []:
-            st.error("Please select at least one match")
-
-    league_data = pd.read_parquet(f"{league}TeamMatchLevelVideo.parquet")
-    league_data = league_data.sort_values(by=['Team', 'Match Date'])
-
-    if full == 'Last x Matches':
-        league_data = league_data.groupby('Team').tail(last_x)
-
-
-    full_team_data = league_data[league_data['Team'] == selected_team]
-    
-    team_data = league_data[(league_data['match_id'].isin(selected_ids)) & (league_data['Team'] == selected_team)]
-
-    league_data = league_data[league_data['Team'] != selected_team]
-    league_data = pd.concat([league_data, team_data], ignore_index=True)
-    league_data['Matches'] = 1
-
-    orig_cols = ['Avg. Defensive Distance',
-                'Att. Third Pressures',
-                'Def Third Entries Allowed',
-                'PPDA',
-                'Shots after Pressure Regains',
-                'Att. Half Regains',
-
-                '% of Goal Kicks Short',
-                'Passes per Sequence',
-                'Avg. Buildup Speed',
-                'Avg. Distance Reached',
-                '% -> Att. Half',
-                '% -> Att. Third',
-
-                'Vertical Sequences',
-                '% of Passes Forward',
-                'Avg Sequence Speed',
-                'Box Entries from Vertical Sequences',
-                'xG from Vertical Sequences',
-                'Goals from Vertical Sequences',
-
-                'Switches',
-                'Switch Accuracy',
-                'Switches Leading to Shots',
-
-                'Crosses Completed',
-                'Cross Accuracy',
-                'Crosses Leading to Shots',
-                'Crosses Leading to Goals',
-                'Deep Crosses',
-                'Deep Crosses Leading to Shots']
-    
-    neg_cols = ['PPDA', 'Def Third Entries Allowed'] 
-    
-    aggs = {col: 'mean' for col in orig_cols}
-    aggs['Matches'] = 'size'
-
-    if len(selected_ids) > 3:
-
-        team_rankings = league_data.groupby('Team').agg(aggs).reset_index()
-        for col in orig_cols:
-            team_rankings[col] = round(team_rankings[col],2)
-    
-    else:
-        team_data['Matches'] = 1
-        team_avg = team_data.groupby('Team').agg(aggs).reset_index()
-        for col in orig_cols:
-            team_avg[col] = round(team_avg[col],2)
-
-        team_rankings = league_data[league_data['Team'] != selected_team]
-        team_rankings = pd.concat([team_rankings, team_avg], ignore_index=True)
-
-
-
-    
-    for col in orig_cols:
-        if col not in ['match_id', 'Opponent', 'Match Date', 'Team', 'Venue']:
-            if col in neg_cols:
-                team_rankings[f"pct{col}"] = 100 - round(team_rankings[col].rank(pct=True) * 100,2)
-
+            container = st.container()
+            #date_selection = st.multiselect("Select Matches", options = list(reversed(matches)))
+            all = st.checkbox("Select all")
+            if all:
+                selected_options = container.multiselect("Select Matches",
+                list(reversed(matches)),list(reversed(matches)))
             else:
-                team_rankings[f"pct{col}"] = round(team_rankings[col].rank(pct=True) * 100,2)
-        
-    
-    team_rankings['Pressing'] = ((0.2 * team_rankings['pctPPDA']) + (0.25 * team_rankings['pctAvg. Defensive Distance']) + (0.2 * team_rankings['pctAtt. Third Pressures']) + (0.25 * team_rankings['pctAtt. Half Regains']) + (0.1 * team_rankings['pctShots after Pressure Regains']))
-    #team_rankings['Pressing'] = round(team_rankings['Pressing'].rank(pct=True) * 100,2)
-    team_rankings['Pressing Rating'] = round(team_rankings['Pressing'],1)
-
-               
-    team_rankings['Goal Kick Buildouts'] = ((0.3 * team_rankings['pctAvg. Distance Reached']) + (0.15 * team_rankings['pctAvg. Buildup Speed']) + (0.4 * team_rankings['pct% -> Att. Half']) + (0.15 * team_rankings['pctPasses per Sequence']))
-    #team_rankings['pctShort GK Buildups'] = round(team_rankings['Short GK Buildups'].rank(pct=True) * 100,2)
-    team_rankings['Buildout Score'] = round(team_rankings['Goal Kick Buildouts'],1)
-
-    team_rankings['Verticality'] = (0.4 * team_rankings['pctVertical Sequences']) + (0.15 * team_rankings['pctxG from Vertical Sequences']) + (0.1 * team_rankings['pctBox Entries from Vertical Sequences']) + (0.25 * team_rankings['pct% of Passes Forward']) + (0.1 * team_rankings['pctAvg Sequence Speed'])
-    team_rankings['Verticality Score'] = round(team_rankings['Verticality'],1)
-
-    team_rankings['Changing Point of Attack'] = (0.65 * team_rankings['pctSwitches']) + (0.1 * team_rankings['pctSwitch Accuracy']) + (0.25 * team_rankings['pctSwitches Leading to Shots'])
-    team_rankings['Switch Score'] = round(team_rankings['Changing Point of Attack'],1)
-
-    team_rankings['Crossing'] = (0.35 * team_rankings['pctCrosses Completed']) + (0.1 * team_rankings['pctCross Accuracy']) + (0.4 * team_rankings['pctCrosses Leading to Shots']) + (0.15 * team_rankings['pctCrosses Leading to Goals'])
-    team_rankings['Cross Score'] = round(team_rankings['Crossing'],1)
-
-
-
-
-
-
-
-
-
-
-    #print(selected_ids)
-    if individual == 'Team' and len(selected_ids) > 0:
-        #print(team_rankings['Team'].unique())
-        pct1 = team_rankings[team_rankings['Team'] == selected_team]['Pressing Rating'].values[0]
-        
-        pct2 = team_rankings[team_rankings['Team'] == selected_team]['Buildout Score'].values[0]
-        pct3 = team_rankings[team_rankings['Team'] == selected_team]['Verticality Score'].values[0]
-        pct4 = team_rankings[team_rankings['Team'] == selected_team]['Switch Score'].values[0] 
-        pct5 = team_rankings[team_rankings['Team'] == selected_team]['Cross Score'].values[0] 
-        custom_progress_bar(int(round(pct1,0)), "Pressing")
-        custom_progress_bar(int(round(pct2,0)), "Goal Kick Buildouts")
-        custom_progress_bar(int(round(pct3,0)), "Verticality")
-        custom_progress_bar(int(round(pct4,0)), "Changing Point of Attack")
-        custom_progress_bar(int(round(pct5,0)), "Crossing")
-
-   
-
-
-    if 'selected_points_t2' not in st.session_state:
-        st.session_state.selected_points_t2 = False
-
-    if 'selected_points_t3' not in st.session_state:
-        st.session_state.selected_points_t3 = False
-
-    if 'selected_points_t4' not in st.session_state:
-        st.session_state.selected_points_t4 = False 
-
-    if 'selected_points_t5' not in st.session_state:
-        st.session_state.selected_points_t5 = False 
-
-    n1 = 0
-    n2 = 0
-
-    print(n1,n2)
-
-   
-
-    # if st.button("Close Video"):
-    #     print('stoppp')
-    #     st.session_state.selected_points = False
-    #     st.session_state.show_video = False
-    #     #st.session_state.video_url = ""
-    closed = st.button("Close Video")
-
-    if closed:
-        #st.session_state.selected_points = False
-        st.session_state.show_video = False
-        n2 += 1
+                selected_options =  container.multiselect("Select Matches",
+            list(reversed(matches)))
+            
+        if full == 'Last x Matches':
+            last_x = 5   
+            last_x = st.slider(f"Last how many games?", 1, len(matches), 5)
             
 
 
-     
-    if individual == 'Player':
-        pct1 = 24
-        pct2 = 26
-        pct3 = 74
-        pct4 = 99
+
+        selected_ids = []   
+        if full == 'Full Season':
+            selected_ids = match_ids
+        elif full == 'Last x Matches':
+            selected_ids = match_ids[-last_x:]
+        else:
+            selected_indices = [list(reversed(matches)).index(option) for option in selected_options]
+            selected_indices = [len(matches) - 1 - index for index in selected_indices]
+
+            for ind in selected_indices:
+                selected_ids.append(match_ids[ind])
+            if selected_ids == []:
+                st.error("Please select at least one match")
+
+        league_data = pd.read_parquet(f"{league}TeamMatchLevelVideo.parquet")
+        league_data = league_data.sort_values(by=['Team', 'Match Date'])
+
+        if full == 'Last x Matches':
+            league_data = league_data.groupby('Team').tail(last_x)
+
+
+        full_team_data = league_data[league_data['Team'] == selected_team]
         
-        custom_progress_bar(int(pct1), "Tackling")
-        custom_progress_bar(int(pct2), "Heading")
-        custom_progress_bar(int(pct3), "Progressive Passing")
-        custom_progress_bar(int(pct4), "Changing Point of Attack")
+        team_data = league_data[(league_data['match_id'].isin(selected_ids)) & (league_data['Team'] == selected_team)]
+
+        league_data = league_data[league_data['Team'] != selected_team]
+        league_data = pd.concat([league_data, team_data], ignore_index=True)
+        league_data['Matches'] = 1
+
+        orig_cols = ['Avg. Defensive Distance',
+                    'Att. Third Pressures',
+                    'Def Third Entries Allowed',
+                    'PPDA',
+                    'Shots after Pressure Regains',
+                    'Att. Half Regains',
+
+                    '% of Goal Kicks Short',
+                    'Passes per Sequence',
+                    'Avg. Buildup Speed',
+                    'Avg. Distance Reached',
+                    '% -> Att. Half',
+                    '% -> Att. Third',
+
+                    'Vertical Sequences',
+                    '% of Passes Forward',
+                    'Avg Sequence Speed',
+                    'Box Entries from Vertical Sequences',
+                    'xG from Vertical Sequences',
+                    'Goals from Vertical Sequences',
+
+                    'Switches',
+                    'Switch Accuracy',
+                    'Switches Leading to Shots',
+
+                    'Crosses Completed',
+                    'Cross Accuracy',
+                    'Crosses Leading to Shots',
+                    'Crosses Leading to Goals',
+                    'Deep Crosses',
+                    'Deep Crosses Leading to Shots']
+        
+        neg_cols = ['PPDA', 'Def Third Entries Allowed'] 
+        
+        aggs = {col: 'mean' for col in orig_cols}
+        aggs['Matches'] = 'size'
+
+        if len(selected_ids) > 3:
+
+            team_rankings = league_data.groupby('Team').agg(aggs).reset_index()
+            for col in orig_cols:
+                team_rankings[col] = round(team_rankings[col],2)
+        
+        else:
+            team_data['Matches'] = 1
+            team_avg = team_data.groupby('Team').agg(aggs).reset_index()
+            for col in orig_cols:
+                team_avg[col] = round(team_avg[col],2)
+
+            team_rankings = league_data[league_data['Team'] != selected_team]
+            team_rankings = pd.concat([team_rankings, team_avg], ignore_index=True)
+
+
+
+        
+        for col in orig_cols:
+            if col not in ['match_id', 'Opponent', 'Match Date', 'Team', 'Venue']:
+                if col in neg_cols:
+                    team_rankings[f"pct{col}"] = 100 - round(team_rankings[col].rank(pct=True) * 100,2)
+
+                else:
+                    team_rankings[f"pct{col}"] = round(team_rankings[col].rank(pct=True) * 100,2)
+            
+        
+        team_rankings['Pressing'] = ((0.2 * team_rankings['pctPPDA']) + (0.25 * team_rankings['pctAvg. Defensive Distance']) + (0.2 * team_rankings['pctAtt. Third Pressures']) + (0.25 * team_rankings['pctAtt. Half Regains']) + (0.1 * team_rankings['pctShots after Pressure Regains']))
+        #team_rankings['Pressing'] = round(team_rankings['Pressing'].rank(pct=True) * 100,2)
+        team_rankings['Pressing Rating'] = round(team_rankings['Pressing'],1)
+
+                
+        team_rankings['Goal Kick Buildouts'] = ((0.3 * team_rankings['pctAvg. Distance Reached']) + (0.15 * team_rankings['pctAvg. Buildup Speed']) + (0.4 * team_rankings['pct% -> Att. Half']) + (0.15 * team_rankings['pctPasses per Sequence']))
+        #team_rankings['pctShort GK Buildups'] = round(team_rankings['Short GK Buildups'].rank(pct=True) * 100,2)
+        team_rankings['Buildout Score'] = round(team_rankings['Goal Kick Buildouts'],1)
+
+        team_rankings['Verticality'] = (0.4 * team_rankings['pctVertical Sequences']) + (0.15 * team_rankings['pctxG from Vertical Sequences']) + (0.1 * team_rankings['pctBox Entries from Vertical Sequences']) + (0.25 * team_rankings['pct% of Passes Forward']) + (0.1 * team_rankings['pctAvg Sequence Speed'])
+        team_rankings['Verticality Score'] = round(team_rankings['Verticality'],1)
+
+        team_rankings['Changing Point of Attack'] = (0.65 * team_rankings['pctSwitches']) + (0.1 * team_rankings['pctSwitch Accuracy']) + (0.25 * team_rankings['pctSwitches Leading to Shots'])
+        team_rankings['Switch Score'] = round(team_rankings['Changing Point of Attack'],1)
+
+        team_rankings['Crossing'] = (0.35 * team_rankings['pctCrosses Completed']) + (0.1 * team_rankings['pctCross Accuracy']) + (0.4 * team_rankings['pctCrosses Leading to Shots']) + (0.15 * team_rankings['pctCrosses Leading to Goals'])
+        team_rankings['Cross Score'] = round(team_rankings['Crossing'],1)
+
+
+
+
+
+
+
+
+
+
+        #print(selected_ids)
+        if individual == 'Team' and len(selected_ids) > 0:
+            #print(team_rankings['Team'].unique())
+            pct1 = team_rankings[team_rankings['Team'] == selected_team]['Pressing Rating'].values[0]
+            
+            pct2 = team_rankings[team_rankings['Team'] == selected_team]['Buildout Score'].values[0]
+            pct3 = team_rankings[team_rankings['Team'] == selected_team]['Verticality Score'].values[0]
+            pct4 = team_rankings[team_rankings['Team'] == selected_team]['Switch Score'].values[0] 
+            pct5 = team_rankings[team_rankings['Team'] == selected_team]['Cross Score'].values[0] 
+            custom_progress_bar(int(round(pct1,0)), "Pressing")
+            custom_progress_bar(int(round(pct2,0)), "Goal Kick Buildouts")
+            custom_progress_bar(int(round(pct3,0)), "Verticality")
+            custom_progress_bar(int(round(pct4,0)), "Changing Point of Attack")
+            custom_progress_bar(int(round(pct5,0)), "Crossing")
+
+    
+
+
+        if 'selected_points_t2' not in st.session_state:
+            st.session_state.selected_points_t2 = False
+
+        if 'selected_points_t3' not in st.session_state:
+            st.session_state.selected_points_t3 = False
+
+        if 'selected_points_t4' not in st.session_state:
+            st.session_state.selected_points_t4 = False 
+
+        if 'selected_points_t5' not in st.session_state:
+            st.session_state.selected_points_t5 = False 
+
+        n1 = 0
+        n2 = 0
+
+        print(n1,n2)
+
+    
+
+        # if st.button("Close Video"):
+        #     print('stoppp')
+        #     st.session_state.selected_points = False
+        #     st.session_state.show_video = False
+        #     #st.session_state.video_url = ""
+        closed = st.button("Close Video")
+
+        if closed:
+            #st.session_state.selected_points = False
+            st.session_state.show_video = False
+            n2 += 1
+                
+
+
+    pos_list = ['CBs', 'WBs', 'CMs', 'AMs + Ws', 'STs']
+    if individual == 'Player': 
+        position_selection = st.selectbox('Choose Position Group', pos_list)
+        
+        if position_selection == 'CBs':
+            match_rankings = pd.read_parquet(f"/Users/malekshafei/Desktop/Louisville/{league}cb_match_rankings.parquet")
+            season_rankings = pd.read_parquet(f"/Users/malekshafei/Desktop/Louisville/{league}cb_season_rankings.parquet")
+            player = st.selectbox('Choose Player', season_rankings[(season_rankings['Team'] == selected_team)]['Player'].unique())
+
+        full = st.radio('Full Season or Select Matches?', ['Full Season', 'Select Matches', 'Last x Matches'])
+        if full == 'Select Matches':
+
+            container = st.container()
+            #date_selection = st.multiselect("Select Matches", options = list(reversed(matches)))
+            all = st.checkbox("Select all")
+            if all:
+                selected_options = container.multiselect("Select Matches",
+                list(reversed(matches)),list(reversed(matches)))
+            else:
+                selected_options =  container.multiselect("Select Matches",
+            list(reversed(matches)))
+            
+        if full == 'Last x Matches':
+            last_x = 5   
+            last_x = st.slider(f"Last how many games?", 1, len(matches), 5)
+            
+
+
+
+        selected_ids = []   
+        if full == 'Full Season':
+            selected_ids = match_ids
+        elif full == 'Last x Matches':
+            selected_ids = match_ids[-last_x:]
+        else:
+            selected_indices = [list(reversed(matches)).index(option) for option in selected_options]
+            selected_indices = [len(matches) - 1 - index for index in selected_indices]
+
+            for ind in selected_indices:
+                selected_ids.append(match_ids[ind])
+            if selected_ids == []:
+                st.error("Please select at least one match")
+
+        
+        match_rankings = match_rankings.sort_values(by=['Team', 'Match Date'])
+
+
+        if full == 'Last x Matches':
+            match_rankings = match_rankings.groupby('Team').tail(last_x)
+
+
+        
+ 
+
+
+       
+        #### Need to fix aggs
+        # aggs = {col: 'mean' for col in player_rankings.columns}
+        #aggs['Matches'] = 'size'
+
+        
+        
+            
+        if full == 'Full Season':
+            player_rankings = season_rankings
+        else: 
+            if len(selected_ids) > 3:
+                player_rankings = season_rankings
+            else:
+                player_rankings = match_rankings
+            player_data = match_rankings[(match_rankings['match_id'].isin(selected_ids)) & (match_rankings['Player'] == player)]
+            player_rankings = player_rankings[player_rankings['Player'] != player]
+            player_rankings = pd.concat([player_rankings, player_data], ignore_index=True)
+            aggs = {col: 'mean' for col in match_rankings.columns if col not in ['Player', 'Team', 'match_id', 'Match Date', 'Opponent']}
+            player_rankings = player_rankings.groupby('Player').agg(aggs).reset_index()
+
+ 
+        if position_selection == 'CBs':
+        
+            player_rankings['Progressive Passing'] = (0.7 * player_rankings['pctProgressive Passes Completed']) + (0.2 * player_rankings['pctLong Passes Completed']) + (0.1 * player_rankings['pctSwitches Completed'])
+            player_rankings['Passing Accuracy'] = (0.65 * player_rankings['pctPass %']) + (0.35 * player_rankings['Progressive Pass %'])
+            player_rankings['Aerial Duels'] = (0.85 * player_rankings['pctAerial Duels Won']) + (0.15 * player_rankings['pctAerial %'])
+            player_rankings['Defensive Output'] = (0.45 * player_rankings['pctTackles Won']) + (0.45 * player_rankings['pctInterceptions']) + (0.1 * player_rankings['pctBlocks'])
+            player_rankings['Tackle Accuracy'] = player_rankings['pctTackle %']
+            player_rankings['Defending High'] = player_rankings['pctAvg Dist']
+            
+
+            pct1 = player_rankings[player_rankings['Player'] == player]['Progressive Passing'].values[0]
+            pct2 = player_rankings[player_rankings['Player'] == player]['Passing Accuracy'].values[0]
+            pct3 = player_rankings[player_rankings['Player'] == player]['Aerial Duels'].values[0]
+            pct4 = player_rankings[player_rankings['Player'] == player]['Defensive Output'].values[0]
+            pct5 = player_rankings[player_rankings['Player'] == player]['Tackle Accuracy'].values[0]
+            print(pct5)
+            pct6 = player_rankings[player_rankings['Player'] == player]['Defending High'].values[0]
+            
+            custom_progress_bar(int(round(pct1,0)), "Progressive Passing")
+            custom_progress_bar(int(round(pct2,0)), "Passing Accuracy")
+            custom_progress_bar(int(round(pct3,0)), "Heading")
+            custom_progress_bar(int(round(pct4,0)), "Defensive Output")
+            custom_progress_bar(int(round(pct5,0)), "Tackle Accuracy")
+            custom_progress_bar(int(round(pct6,0)), "Defending High")
+
 
 if individual == 'Team' and len(selected_ids) > 0:    
     tab1, tab2, tab3, tab4, tab5 = st.tabs(['Pressing', 'Goal Kick Buildouts', 'Verticality','Changing Point of Attack', 'Crossing'])
@@ -988,7 +1078,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 elif x == 'Katie Lund': return "LouCityPlayerPhotos/Lund.png"
                 elif x == 'Taylor Flint': return "LouCityPlayerPhotos/Flint.png"
                 elif x == 'Uchenna Kanu': return "LouCityPlayerPhotos/Kanu.png"
-                elif x == 'Carson Pickett': return "LouCityPlayerPhotos/Pickett.png"
+                #elif x == 'Carson Pickett': return "LouCityPlayerPhotos/Pickett.png"
                 elif x == 'Jordan Elisabeth Baggett': return "LouCityPlayerPhotos/Baggett.png"
                 elif x == 'Lauren Milliet': return "LouCityPlayerPhotos/Milliet.png"
                 elif x == 'Abby Erceg': return "LouCityPlayerPhotos/Erceg.png"
@@ -3663,5 +3753,42 @@ if individual == 'Team' and len(selected_ids) > 0:
             
             
 
-if individual == 'Player':    
-    tab1, tab2, tab3, tab4 = st.tabs(['Tackling', 'Heading', 'Progressive Passing','Changing Point of Attack'])
+if individual == 'Player' and len(selected_ids) > 0:    
+    if position_selection == 'CBs':
+        tab1, tab2 = st.tabs(['In Possession', 'Out of Possession'])
+
+        with tab1: 
+
+            orig_cols = ['Passes Attempted',
+                'Pass %',
+            'Progressive Passes Completed',
+            'Switches Completed',
+            'Long Passes Completed',
+            'Passes to Final Third',
+
+            'Tackles Won',
+            'Tackle %',
+            'Aerial Duels Won',
+            'Aerial %',
+            'Interceptions'
+            'Avg Dist'
+            ]
+            pct1 = player_rankings[player_rankings['Player'] == player]['pctPasses Attempted'].values[0]
+            pct2 = player_rankings[player_rankings['Player'] == player]['pctPass %'].values[0]
+            pct3 = player_rankings[player_rankings['Player'] == player]['pctProgressive Passes Completed'].values[0]
+            pct4 = player_rankings[player_rankings['Player'] == player]['pctSwitches Completed'].values[0]
+            pct5 = player_rankings[player_rankings['Player'] == player]['pctLong Passes Completed'].values[0]
+            pct6 = player_rankings[player_rankings['Player'] == player]['pctPasses to Final Third'].values[0]
+            
+
+        
+            col1, col2, col3 = st.columns(3)
+            with col1: custom_progress_bar(int(round(pct1,1)), f"Passes Attempted   ({round(player_rankings[player_rankings['Player'] == player]['Passes Attempted'].values[0],1)})")
+            with col2: custom_progress_bar(int(round(pct2,1)), f"Passing Accuracy   ({int(round(player_rankings[player_rankings['Player'] == player]['Pass %'].values[0],1))}%)")
+            with col3: custom_progress_bar(int(round(pct3,1)), f"Progressive Passes  ({round(player_rankings[player_rankings['Player'] == player]['Progressive Passes Completed'].values[0],1)})")
+ 
+            with col1: custom_progress_bar(int(round(pct4,1)), f"Switches   ({round(player_rankings[player_rankings['Player'] == player]['Switches Completed'].values[0],1)})")
+            with col2: custom_progress_bar(int(round(pct5,1)), f"Long Passes  ({round(player_rankings[player_rankings['Player'] == player]['Long Passes Completed'].values[0],1)})")
+            with col3: custom_progress_bar(int(round(pct6,1)), f"Passes to Final Third  ({round(player_rankings[player_rankings['Player'] == player]['Passes to Final Third'].values[0],1)})")
+
+ 
