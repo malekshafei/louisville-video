@@ -170,7 +170,7 @@ women_matches = [
     '9/14 vs Angel City',
     '9/21 vs North Carolina',
     '9/28 @ Utah',
-    '10/5 vs Kansas City'
+    '10/5 vs Kansas City' 
 ]
 women_match_ids = [3931339, 3931349, 3931357, 3931362, 3931368, 3931379,
                     3931388, 3931393, 3931403, 3931413, 3931414, 3931422, 3931429, 3931435,
