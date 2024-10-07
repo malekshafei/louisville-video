@@ -168,11 +168,13 @@ women_matches = [
     '8/31 vs Seattle',
     '9/7 @ Bay',
     '9/14 vs Angel City',
-    '9/21 vs North Carolina'
+    '9/21 vs North Carolina',
+    '9/28 @ Utah',
+    '10/5 vs Kansas City'
 ]
 women_match_ids = [3931339, 3931349, 3931357, 3931362, 3931368, 3931379,
                     3931388, 3931393, 3931403, 3931413, 3931414, 3931422, 3931429, 3931435,
-                    3931439, 3931449, 3931455, 3931460, 3931467, 3931475, 3931482]
+                    3931439, 3931449, 3931455, 3931460, 3931467, 3931475, 3931482, 3931490, 3931498]
 
 
 
@@ -284,7 +286,7 @@ with st.sidebar:
 
     #team = st.selectbox('Select Team', ['Louisville City'])
     #individual = st.radio('Team or Player Analyis?', ['Team', 'Player'])
-    individual = st.radio('Team or Player Analyis?', ['Team', 'Player'])
+    individual = st.radio('Team or Player Analyis?', ['Team'])
     if individual == 'Team':
         full = 'Full Season'
         full = st.radio('Full Season or Select Matches?', ['Full Season', 'Select Matches', 'Last x Matches'])
@@ -345,7 +347,7 @@ with st.sidebar:
 
                     '% of Goal Kicks Short',
                     'Passes per Sequence',
-                    'Avg. Buildup Speed',
+                    'Long GK Retention %',
                     'Avg. Distance Reached',
                     '% -> Att. Half',
                     '% -> Att. Third',
@@ -365,7 +367,8 @@ with st.sidebar:
                     'Cross Accuracy',
                     'Crosses Leading to Shots',
                     'Crosses Leading to Goals',
-                    'Deep Crosses',
+                    # 'Deep Crosses',
+                    'Crosses from Assist Zone',
                     'Deep Crosses Leading to Shots']
         
         neg_cols = ['PPDA', 'Def Third Entries Allowed'] 
@@ -405,7 +408,7 @@ with st.sidebar:
         team_rankings['Pressing Rating'] = round(team_rankings['Pressing'],1)
 
                 
-        team_rankings['Goal Kick Buildouts'] = ((0.3 * team_rankings['pctAvg. Distance Reached']) + (0.15 * team_rankings['pctAvg. Buildup Speed']) + (0.4 * team_rankings['pct% -> Att. Half']) + (0.15 * team_rankings['pctPasses per Sequence']))
+        team_rankings['Goal Kick Buildouts'] = ((0.4 * team_rankings['pctAvg. Distance Reached']) + (0.4 * team_rankings['pct% -> Att. Half']) + (0.2 * team_rankings['pctPasses per Sequence']))
         #team_rankings['pctShort GK Buildups'] = round(team_rankings['Short GK Buildups'].rank(pct=True) * 100,2)
         team_rankings['Buildout Score'] = round(team_rankings['Goal Kick Buildouts'],1)
 
@@ -1467,7 +1470,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         
         pct1 = team_rankings[team_rankings['Team'] == selected_team]['pct% of Goal Kicks Short'].values[0]
         pct2 = team_rankings[team_rankings['Team'] == selected_team]['pctPasses per Sequence'].values[0]
-        pct3 = team_rankings[team_rankings['Team'] == selected_team]['pctAvg. Buildup Speed'].values[0]
+        pct3 = team_rankings[team_rankings['Team'] == selected_team]['pctLong GK Retention %'].values[0]
         pct4 = team_rankings[team_rankings['Team'] == selected_team]['pctAvg. Distance Reached'].values[0]
         pct5 = team_rankings[team_rankings['Team'] == selected_team]['pct% -> Att. Half'].values[0]
         pct6 = team_rankings[team_rankings['Team'] == selected_team]['pct% -> Att. Third'].values[0]
@@ -1478,7 +1481,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         col1, col2, col3 = st.columns(3)
         with col1: custom_progress_bar(int(pct1), f"% of Goal Kicks Short   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% of Goal Kicks Short'].values[0],1))}%)")
         with col2: custom_progress_bar(int(pct2), f"Passes per Sequence   ({round(team_rankings[team_rankings['Team'] == selected_team]['Passes per Sequence'].values[0],1)})")
-        with col3: custom_progress_bar(int(pct3), f"Avg. Buildup Speed   ({round(team_rankings[team_rankings['Team'] == selected_team]['Avg. Buildup Speed'].values[0],1)} m/s)")
+        with col3: custom_progress_bar(int(pct3), f"Long GK Retention %   ({(int(round(team_rankings[team_rankings['Team'] == selected_team]['Long GK Retention %'].values[0],1)))}%)")
         
         with col1: custom_progress_bar(int(pct4), f"Avg. Distance Reached   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Avg. Distance Reached'].values[0],1))}m)")
         with col2: custom_progress_bar(int(pct5), f"% -> Att. Half   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% -> Att. Half'].values[0],1))}%)")
@@ -1487,21 +1490,21 @@ if individual == 'Team' and len(selected_ids) > 0:
         
         st.write("")
         
-        selected_metrics = ['Avg. Distance Reached', 'Avg. Buildup Speed']
+        selected_metrics = ['Avg. Distance Reached', 'Long GK Retention %']
         #df = pd.DataFrame(data) 
         df = full_team_data.sort_values(by='match_id')
 
         #metrics = orig_cols#[col for col in df.columns if col != 'Match']
         metrics = ['% of Goal Kicks Short',
                    'Passes per Sequence',
-                    'Avg. Buildup Speed',
+                    'Long GK Retention %',
                     'Avg. Distance Reached',
                     '% -> Att. Half',
                     '% -> Att. Third']
         #print(metrics)
         if 'selected_metrics_t2' not in st.session_state:
             #st.session_state.selected_metrics = metrics[:2]  # Default to first two metrics
-            st.session_state.selected_metrics_t2 = ['Avg. Buildup Speed', '% -> Att. Half']
+            st.session_state.selected_metrics_t2 = ['Long GK Retention %', '% -> Att. Half']
         
 
         
@@ -1632,7 +1635,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 #team_rankings['Pressing'] = round(team_rankings['Pressing'].rank(pct=True) * 100,2)
                 team_rankings2['Pressing Rating'] = round(team_rankings2['Pressing'],1)
 
-                team_rankings2['Goal Kick Buildouts'] = ((0.3 * team_rankings2['pctAvg. Distance Reached']) + (0.15 * team_rankings2['pctAvg. Buildup Speed']) + (0.4 * team_rankings2['pct% -> Att. Half']) + (0.15 * team_rankings2['pctPasses per Sequence']))
+                team_rankings2['Goal Kick Buildouts'] = ((0.4 * team_rankings2['pctAvg. Distance Reached'])  + (0.4 * team_rankings2['pct% -> Att. Half']) + (0.2 * team_rankings2['pctPasses per Sequence']))
                 #team_rankings['pctShort GK Buildups'] = round(team_rankings['Short GK Buildups'].rank(pct=True) * 100,2)
                 team_rankings2['Buildout Score'] = round(team_rankings2['Goal Kick Buildouts'],1)
 
@@ -1654,7 +1657,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 team_rankings[col] = round(team_rankings[col],2)
                 shortened_gk_data = team_rankings.sort_values(by = 'Buildout Score', ascending=False)
                 #shortened_gk_data = shortened_gk_data[['Team','Matches', 'Buildout Score', '% of Goal Kicks Short', 'Passes per Sequence', 'Avg. Buildup Speed', 'Avg. Distance Reached','% -> Att. Half', '% -> Att. Third']]
-                shortened_gk_data = shortened_gk_data[['Team','Buildout Score','Matches',  '% of Goal Kicks Short', 'Passes per Sequence', 'Avg. Buildup Speed', 'Avg. Distance Reached','% -> Att. Half', '% -> Att. Third']]
+                shortened_gk_data = shortened_gk_data[['Team','Buildout Score','Matches',  '% of Goal Kicks Short', 'Passes per Sequence', 'Long GK Retention %', 'Avg. Distance Reached','% -> Att. Half', '% -> Att. Third']]
                 #st.write(shortened_pressing_data)
 
             shortened_gk_data['Team'] = shortened_gk_data['Team'].replace({
@@ -2062,7 +2065,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         
         st.write("")
         
-        selected_metrics = ['Avg. Distance Reached', 'Avg. Buildup Speed']
+        selected_metrics = ['Avg. Distance Reached', 'Long GK Retention %']
         #df = pd.DataFrame(data) 
         df = full_team_data.sort_values(by='match_id')
 
@@ -3183,7 +3186,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         
         pct1 = team_rankings[team_rankings['Team'] == selected_team]['pctCrosses Completed'].values[0]
         pct2 = team_rankings[team_rankings['Team'] == selected_team]['pctCross Accuracy'].values[0]
-        pct3 = team_rankings[team_rankings['Team'] == selected_team]['pctDeep Crosses'].values[0]
+        pct3 = team_rankings[team_rankings['Team'] == selected_team]['pctCrosses from Assist Zone'].values[0]
         pct4 = team_rankings[team_rankings['Team'] == selected_team]['pctCrosses Leading to Shots'].values[0]
         pct5 = team_rankings[team_rankings['Team'] == selected_team]['pctCrosses Leading to Goals'].values[0]
         pct6 = team_rankings[team_rankings['Team'] == selected_team]['pctDeep Crosses Leading to Shots'].values[0]
@@ -3193,7 +3196,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         col1, col2, col3 = st.columns(3)
         with col1: custom_progress_bar(int(pct1), f"Crosses Completed   ({round(team_rankings[team_rankings['Team'] == selected_team]['Crosses Completed'].values[0],1)})")
         with col2: custom_progress_bar(int(pct2), f"Cross Accuracy   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Cross Accuracy'].values[0],2) * 100)}%)")
-        with col3: custom_progress_bar(int(pct3), f"Deep Crosses   ({round(team_rankings[team_rankings['Team'] == selected_team]['Deep Crosses'].values[0],1)})")
+        with col3: custom_progress_bar(int(pct3), f"Assist Zone Crosses  ({round(team_rankings[team_rankings['Team'] == selected_team]['Crosses from Assist Zone'].values[0],1)})")
         
         with col1: custom_progress_bar(int(pct4), f"Crosses to Shots   ({round(team_rankings[team_rankings['Team'] == selected_team]['Crosses Leading to Shots'].values[0],1)})")
         with col2: custom_progress_bar(int(pct5), f"Crosses to Goals   ({round(team_rankings[team_rankings['Team'] == selected_team]['Crosses Leading to Goals'].values[0],1)})")
@@ -3210,7 +3213,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         #metrics = orig_cols#[col for col in df.columns if col != 'Match']
         metrics = ['Crosses Completed',
                    'Cross Accuracy',
-                   'Deep Crosses',
+                   'Crosses from Assist Zone',
                    'Crosses Leading to Shots',
                    'Crosses Leading to Goals',
                    'Deep Crosses Leading to Shots'
@@ -3375,7 +3378,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 team_rankings[col] = round(team_rankings[col],2)
                 shortened_cross_data = team_rankings.sort_values(by = 'Cross Score', ascending=False)
                 #shortened_gk_data = shortened_gk_data[['Team','Matches', 'Buildout Score', '% of Goal Kicks Short', 'Passes per Sequence', 'Avg. Buildup Speed', 'Avg. Distance Reached','% -> Att. Half', '% -> Att. Third']]
-                shortened_cross_data = shortened_cross_data[['Team','Cross Score','Matches',  'Crosses Completed', 'Cross Accuracy', 'Crosses Leading to Shots', 'Crosses Leading to Goals', 'Deep Crosses','Deep Crosses Leading to Shots']]
+                shortened_cross_data = shortened_cross_data[['Team','Cross Score','Matches',  'Crosses Completed', 'Cross Accuracy', 'Crosses Leading to Shots', 'Crosses Leading to Goals', 'Crosses from Assist Zone','Deep Crosses Leading to Shots']]
                 #st.write(shortened_pressing_data)
 
             shortened_cross_data['Team'] = shortened_cross_data['Team'].replace({
