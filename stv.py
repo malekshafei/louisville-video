@@ -1480,12 +1480,12 @@ if individual == 'Team' and len(selected_ids) > 0:
        
         col1, col2, col3 = st.columns(3)
         with col1: custom_progress_bar(int(pct1), f"% of Goal Kicks Short   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% of Goal Kicks Short'].values[0],1))}%)")
-        with col2: custom_progress_bar(int(pct2), f"Passes per Sequence   ({round(team_rankings[team_rankings['Team'] == selected_team]['Passes per Sequence'].values[0],1)})")
+        with col2: custom_progress_bar(int(pct2), f"Passes per Short Seq.   ({round(team_rankings[team_rankings['Team'] == selected_team]['Passes per Sequence'].values[0],1)})")
         with col3: custom_progress_bar(int(pct3), f"Long GK Retention %   ({(int(round(team_rankings[team_rankings['Team'] == selected_team]['Long GK Retention %'].values[0],1)))}%)")
         
-        with col1: custom_progress_bar(int(pct4), f"Avg. Distance Reached   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Avg. Distance Reached'].values[0],1))}m)")
-        with col2: custom_progress_bar(int(pct5), f"% -> Att. Half   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% -> Att. Half'].values[0],1))}%)")
-        with col3: custom_progress_bar(int(pct6), f"% -> Att. Third   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% -> Att. Third'].values[0],1))}%)")
+        with col1: custom_progress_bar(int(pct4), f"Avg. Dist. on Short   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['Avg. Distance Reached'].values[0],1))}m)")
+        with col2: custom_progress_bar(int(pct5), f"% Short -> Att. Half   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% -> Att. Half'].values[0],1))}%)")
+        with col3: custom_progress_bar(int(pct6), f"% Short -> Att. Third   ({int(round(team_rankings[team_rankings['Team'] == selected_team]['% -> Att. Third'].values[0],1))}%)")
 
         
         st.write("")
