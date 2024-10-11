@@ -4106,8 +4106,8 @@ if individual == 'Team' and len(selected_ids) > 0:
             # Load Goal Kick Event Data
             # Replace this with your parquet file, and make sure you have your dataframe loaded.
             #cross_events = pd.read_parquet(f"{league}VideoCrossEvents.parquet")
-            sp_shot_events = pd.read_parquet(f"/Users/malekshafei/Desktop/Louisville/{league}VideoSPShotEvents.parquet")
-            opp_sp_shot_events = pd.read_parquet(f"/Users/malekshafei/Desktop/Louisville/{league}VideoOppSPShotEvents.parquet")
+            sp_shot_events = pd.read_parquet(f"{league}VideoSPShotEvents.parquet")
+            opp_sp_shot_events = pd.read_parquet(f"{league}VideoOppSPShotEvents.parquet")
             
             opp_sp_shot_events['x'] = 120 - opp_sp_shot_events['x']
             opp_sp_shot_events['y'] = 80 - opp_sp_shot_events['y']
