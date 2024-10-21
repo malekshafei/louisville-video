@@ -140,13 +140,14 @@ men_matches = [
     '9/28 vs Memphis',
     '10/2 vs Miami',
     '10/5 @ Indy',
-    '10/12 vs Tampa Bay'
+    '10/12 vs Tampa Bay',
+    '10/19 @ San Antonio'
            ]
 
 men_match_ids = [3930232, 3930247, 3930255, 3930266, 3930274, 3930288, 3930307,
             3930327, 3930340, 3930351, 3930354, 3930357, 3930369, 3930382,
             3930392, 3930399, 3930412, 3930424, 3930444, 3930456, 3930475,
-            3930487, 3930499, 3930506, 3930524, 3930527, 3930541, 3930560, 3930551, 3930574, 3930578, 3930596 ]
+            3930487, 3930499, 3930506, 3930524, 3930527, 3930541, 3930560, 3930551, 3930574, 3930578, 3930596, 3930610 ]
 
 women_matches = [
     '3/16 vs Orlando',
@@ -172,11 +173,12 @@ women_matches = [
     '9/21 vs North Carolina',
     '9/28 @ Utah',
     '10/5 vs Kansas City',
-    '10/13 @ Washington'
+    '10/13 @ Washington',
+    '10/19 vs Portland'
 ]
 women_match_ids = [3931339, 3931349, 3931357, 3931362, 3931368, 3931379,
                     3931388, 3931393, 3931403, 3931413, 3931414, 3931422, 3931429, 3931435,
-                    3931439, 3931449, 3931455, 3931460, 3931467, 3931475, 3931482, 3931490, 3931498, 3931505]
+                    3931439, 3931449, 3931455, 3931460, 3931467, 3931475, 3931482, 3931490, 3931498, 3931505, 3931510]
 
 
 
@@ -268,21 +270,28 @@ import streamlit.components.v1 as components
 
 player_list = ['Arturo Osuna Ordoñez', 'Sean Totsch', 'Kyle Adams', 'Wesley Charpie']
 
+#img_path = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Louisville_City_FC_2020_logo_primary.svg/160px-Louisville_City_FC_2020_logo_primary.svg.png"
  
 with st.sidebar:
-    #st.write(f"Streamlit version: {st.__version__}")
+    #st.image(img_path, width=90)  # Adjust the width as needed
     selected_team = st.radio('Select Team', ['LouCity', 'Racing'])
     if selected_team == 'LouCity':
         selected_team = 'Louisville City'
         matches = men_matches
         match_ids = men_match_ids
+        img_path = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Louisville_City_FC_2020_logo_primary.svg/160px-Louisville_City_FC_2020_logo_primary.svg.png"
+        #st.write(f"Streamlit version: {st.__version__}")
+
         st.logo("https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Louisville_City_FC_2020_logo_primary.svg/160px-Louisville_City_FC_2020_logo_primary.svg.png")
+        #st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Louisville_City_FC_2020_logo_primary.svg/160px-Louisville_City_FC_2020_logo_primary.svg.png", width=100)  # Adjust the width as needed
+
         league = 'USL'
 
     if selected_team == 'Racing':
         selected_team = 'Racing Louisville FC'
         matches = women_matches
         match_ids = women_match_ids
+        #img_path = "https://upload.wikimedia.org/wikipedia/en/thumb/3/37/Racing_Louisville_FC_logo.svg/1024px-Racing_Louisville_FC_logo.svg.png"
         st.logo("https://upload.wikimedia.org/wikipedia/en/thumb/3/37/Racing_Louisville_FC_logo.svg/1024px-Racing_Louisville_FC_logo.svg.png")
         league = 'NWSL'
 
