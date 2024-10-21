@@ -270,7 +270,7 @@ player_list = ['Arturo Osuna Ordoñez', 'Sean Totsch', 'Kyle Adams', 'Wesley Cha
 
  
 with st.sidebar:
-    st.write(f"Streamlit version: {st.__version__}")
+    #st.write(f"Streamlit version: {st.__version__}")
     selected_team = st.radio('Select Team', ['LouCity', 'Racing'])
     if selected_team == 'LouCity':
         selected_team = 'Louisville City'
