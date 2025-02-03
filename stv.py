@@ -735,7 +735,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                 'yaxis': {
                     'title': selected_metrics[0], 
                     'side': "left",
-                    'titlefont': {'color': 'white'}
+                    'tickfont': {'color': 'white'}
 
                     },
                 'legend': {
@@ -755,7 +755,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                     'title': selected_metrics[1], 
                     'side': "right", 
                     'overlaying': "y",
-                    'titlefont': {'color': 'purple'}
+                    'tickfont': {'color': 'purple'}
                 }
             
             if selected_metrics[0] in neg_cols:
@@ -1626,7 +1626,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                     'title': selected_metrics[1], 
                     'side': "right", 
                     'overlaying': "y",
-                    'titlefont': {'color': 'purple'}
+                    'tickfont': {'color': 'purple'}
                 }
             
             if selected_metrics[0] in neg_cols:
@@ -2201,7 +2201,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                     'title': selected_metrics[1], 
                     'side': "right", 
                     'overlaying': "y",
-                    'titlefont': {'color': 'purple'}
+                    'tickfont': {'color': 'purple'}
                 }
             
             if selected_metrics[0] in neg_cols:
@@ -2375,6 +2375,7 @@ if individual == 'Team' and len(selected_ids) > 0:
             # Load Goal Kick Event Data
             # Replace this with your parquet file, and make sure you have your dataframe loaded.
             vert_events = pd.read_parquet(f"{league}VideoVerticalityEvents.parquet")
+            vert_events = vert_events[vert_events['formatted_time'] != '0:00']
 
             # Filter based on selected match ids
             vert_events = vert_events[vert_events['match_id'].isin(selected_ids)] 
@@ -2524,7 +2525,10 @@ if individual == 'Team' and len(selected_ids) > 0:
         def find_closest_segment_with_times(time_str, segment_length = 60, overlap = 30):
             # Convert time_str to seconds
             minutes, seconds = map(int, time_str.split(':'))
-            time_in_seconds = (minutes * 60 + seconds) - 5 #5 seconds before clip
+            if time_str == "0:00":
+                time_in_seconds = (minutes * 60 + seconds)
+            
+            else: time_in_seconds = (minutes * 60 + seconds) - 5 #5 seconds before clip
 
             # Calculate segment details
             step = segment_length - overlap
@@ -2546,6 +2550,7 @@ if individual == 'Team' and len(selected_ids) > 0:
         time_str = time_selection[3:8]
         #print(time_str)
         segment, time_within_segment = find_closest_segment_with_times(time_str)
+        
  
 
         csv_file_path = 'drive_files.csv'
@@ -2555,11 +2560,15 @@ if individual == 'Team' and len(selected_ids) > 0:
             
             filename = f"{match_selection}-h{half_selection}-{segment}.mp4"
             #(filename)
-            file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
+
+            file_id_series = files_df.loc[files_df['File Name'] == filename, 'File ID']
+            
+            if not file_id_series.empty:
+                file_id = files_df.loc[files_df['File Name'] == filename]['File ID'].values[0]
             # files = list_files_in_folder(FOLDER_ID)
             # file_id = get_file_id(filename, files)
             
-            if file_id:
+            
                 #video_url = f"https://drive.google.com/uc?export=download&id={file_id}"
                 #video_url = f"https://drive.google.com/file/d/{file_id}/view"
                 video_url = f"https://drive.google.com/file/d/{file_id}/preview?t={time_within_segment}"
@@ -2764,7 +2773,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                     'title': selected_metrics[1], 
                     'side': "right", 
                     'overlaying': "y",
-                    'titlefont': {'color': 'purple'}
+                    'tickfont': {'color': 'purple'}
                 }
             
             if selected_metrics[0] in neg_cols:
@@ -3344,7 +3353,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                     'title': selected_metrics[1], 
                     'side': "right", 
                     'overlaying': "y",
-                    'titlefont': {'color': 'purple'}
+                    'tickfont': {'color': 'purple'}
                 }
             
             if selected_metrics[0] in neg_cols:
@@ -3940,7 +3949,7 @@ if individual == 'Team' and len(selected_ids) > 0:
                     'title': selected_metrics[1], 
                     'side': "right", 
                     'overlaying': "y",
-                    'titlefont': {'color': 'purple'}
+                    'tickfont': {'color': 'purple'}
                 }
             
             if selected_metrics[0] in neg_cols:
