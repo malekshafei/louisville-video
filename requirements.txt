@@ -6,6 +6,6 @@ openpyxl
 statsbombpy
 mplsoccer
 streamlit
-plotly
+plotly==6.0.0
 plotly.express
 streamlit_plotly_events
