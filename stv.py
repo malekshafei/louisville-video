@@ -40,8 +40,10 @@ st.set_page_config(
     
 )
 import os
-regular_font_path = '/Users/malekshafei/Downloads/Montserrat/static/Montserrat-Regular.ttf'
-bold_font_path = '/Users/malekshafei/Downloads/Montserrat/static/Montserrat-Bold.ttf'
+# regular_font_path = '/Users/malekshafei/Downloads/Montserrat/static/Montserrat-Regular.ttf'
+# bold_font_path = '/Users/malekshafei/Downloads/Montserrat/static/Montserrat-Bold.ttf'
+regular_font_path = 'Montserrat-Regular.ttf'
+bold_font_path = 'Montserrat-Bold.ttf'
 if os.path.isfile(regular_font_path):
     fontManager.addfont(regular_font_path)
 else:
